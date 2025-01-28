@@ -1,3 +1,66 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "next/core-web-vitals",
+    "xo",
+    "prettier",
+    "plugin:promise/recommended",
+    "plugin:import/recommended",
+    "plugin:jsx-a11y/recommended"
+  ],
+  "plugins": ["promise", "import", "jsx-a11y", "@typescript-eslint"],
+  "overrides": [
+    {
+      "extends": ["xo-typescript", "prettier"],
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "camelcase": "off",
+        "prefer-const": "error",
+        "no-undef": "off",
+        "no-bitwise": "off",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "warn",
+        "@typescript-eslint/consistent-type-definitions": "off",
+        "@typescript-eslint/prefer-nullish-coalescing": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/naming-convention": "off",
+        "@typescript-eslint/no-base-to-string": "off",
+        "@typescript-eslint/restrict-template-expressions": "off",
+        "@typescript-eslint/ban-types": "off",
+        "@typescript-eslint/no-confusing-void-expression": "off",
+        "@typescript-eslint/member-ordering": "off",
+        "@typescript-eslint/parameter-properties": "off",
+        "@typescript-eslint/no-extraneous-class": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-throw-literal": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/consistent-type-imports": "off"
+      }
+    },
+    {
+      "files": ["src/**/globalFonts.ts"],
+      "rules": {
+        "new-cap": "off"
+      }
+    }
+  ],
+  "rules": {
+    "capitalized-comments": "off",
+    "promise/catch-or-return": "off",
+    "promise/always-return": "off",
+    "no-empty-static-block": "off",
+    "no-constant-binary-expression": "off",
+    "no-new-native-nonconstructor": "off",
+    "import/first": "error",
+    "import/no-duplicates": "error",
+    "no-duplicate-imports": "error",
+    "no-implicit-coercion": "off",
+    "guard-for-in": "off",
+    "complexity": "off"
+  },
+  "settings": {
+    "import/resolver": {
+      "alias": true
+    }
+  }
 }

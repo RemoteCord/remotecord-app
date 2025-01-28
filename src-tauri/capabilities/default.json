@@ -1,0 +1,17 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-capability",
+  "description": "enables the default permissions",
+  "windows": ["main"],
+  "platforms": ["windows"],
+  "permissions": [
+    "core:default",
+    "notification:default",
+    "dialog:default",
+    "os:default",
+    "websocket:default",
+    "deep-link:default",
+    "store:default",
+    "shellx:allow-execute"
+  ]
+}
