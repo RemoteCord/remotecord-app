@@ -3,6 +3,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 import { load } from "@tauri-apps/plugin-store";
+import { usePathname } from "next/navigation";
+import { useStoreTauri } from "@/hooks/useStore";
 
 const SessionContext = createContext<
   | {
@@ -15,13 +17,19 @@ const SessionContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [session, setSession] = useState<string | undefined>(undefined);
+  const pathname = usePathname();
+  const { getRecord, getAllRecords } = useStoreTauri();
 
   useEffect(() => {
     const handleFetchStore = async () => {
-      const store = await load("store.json", { autoSave: false });
-      const data = await store.get<{ session: string }>("session");
-      console.log("data", data);
-      setSession(data?.session);
+      const data = (await getRecord("auth")) as string;
+      const allrecord = await getAllRecords();
+      console.log("session", data, pathname, allrecord);
+
+      setSession(data);
+      if (!data && pathname !== "/auth") {
+        window.location.href = "/auth";
+      }
     };
     handleFetchStore();
   }, []);

@@ -10,10 +10,12 @@ export function Screenshot() {
   const handleScreenshot = async () => {
     console.log("Taking screenshot");
     invoke("capture", { id: screen }).then((image) => {
+      const [base64, buffer] = image as [string, string];
+
       console.log(image);
 
       if (imageRef.current) {
-        imageRef.current.src = `data:image/png;base64,${image}`;
+        imageRef.current.src = `data:image/png;base64,${base64}`;
       }
     });
   };

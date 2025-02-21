@@ -5,7 +5,7 @@
   "identifier": "com.luqueee.dev",
   "build": {
     "frontendDist": "../out",
-    "devUrl": "http://localhost:3007",
+    "devUrl": "http://localhost:3002",
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build"
   },
@@ -13,15 +13,29 @@
   "app": {
     "windows": [
       {
-        "title": "test-tauri",
-        "width": 800,
+        "title": "RemoteCord",
+        "width": 1000,
         "height": 600,
-        "resizable": true,
+        "resizable": false,
         "fullscreen": false
       }
     ],
     "security": {
-      "csp": null
+      "headers": {
+        "Cross-Origin-Opener-Policy": "same-origin",
+        "Cross-Origin-Embedder-Policy": "require-corp",
+        "Timing-Allow-Origin": [
+          "https://developer.mozilla.org",
+          "https://example.com",
+          "https://preview.luqueee.dev"
+        ],
+        "Access-Control-Expose-Headers": "Tauri-Custom-Header",
+        "Tauri-Custom-Header": {
+          "key1": "'value1' 'value2'",
+          "key2": "'value3'"
+        }
+      },
+      "csp": "default-src 'self'; connect-src ipc: http://ipc.localhost"
     }
   },
 

@@ -12,6 +12,64 @@
     "websocket:default",
     "deep-link:default",
     "store:default",
-    "shellx:allow-execute"
+    "shellx:allow-execute",
+    "shellx:allow-spawn",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "https://*.luqueee.dev"
+        }
+      ],
+      "deny": [
+        {
+          "url": "https://private.tauri.app"
+        }
+      ]
+    },
+    "core:window:default",
+    "core:window:allow-start-dragging",
+    "fs:allow-open",
+    "fs:allow-write",
+    "fs:allow-read",
+    "fs:read-files",
+    "fs:write-files",
+    "fs:read-dirs",
+
+    "fs:allow-read-text-file",
+    "fs:allow-rename",
+    "fs:allow-mkdir",
+    "fs:allow-remove",
+    "fs:allow-write-text-file",
+    "fs:scope-download-recursive",
+    "fs:scope-resource-recursive",
+
+    {
+      "identifier": "fs:scope-desktop-recursive",
+      "allow": [
+        {
+          "path": "$DESKTOP/**"
+        }
+      ]
+    },
+
+    {
+      "identifier": "fs:scope-download-recursive",
+      "allow": [
+        {
+          "path": "$DOWNLOAD/**"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:scope-document-recursive",
+      "allow": [
+        {
+          "path": "$DOCUMENTS/**"
+        }
+      ]
+    },
+
+    "fs-pro:default"
   ]
 }

@@ -1,27 +1,27 @@
+use base64;
 use screenshots::Screen;
 use std::time::SystemTime;
-use base64;
 
 #[tauri::command]
-pub fn capture(id: u32) -> String {
+pub fn capture(id: u32) -> (String, Vec<u8>) {
     let start = SystemTime::now();
     let screens = Screen::all().unwrap();
     println!("screens: {:?}", screens);
 
-   
-        let screen = screens.into_iter().find(|s| s.display_info.id as u32 == id).unwrap();
-        println!("screen: {:?}", screen);
-        
-        let image = screen.capture().unwrap();
+    let screen = screens
+        .into_iter()
+        .find(|s| s.display_info.id as u32 == id)
+        .unwrap();
+    println!("screen: {:?}", screen);
 
-        let buffer = image.buffer();
-        let base64 = base64::encode(buffer);
-        println!("Done: {:?}", start.elapsed().ok());
+    let image = screen.capture().unwrap();
 
-        return base64;
+    let buffer = image.buffer().to_vec();
+    let base64: String = base64::encode(buffer.clone());
 
-    
+    println!("Done: {:?}", start.elapsed().ok());
 
+    return (base64, buffer);
 }
 
 #[derive(serde::Serialize)]
@@ -43,5 +43,5 @@ pub fn get_screens() -> Vec<ScreenInfo> {
             frequency: screen.display_info.frequency,
         });
     }
-    return  screen_names;
+    return screen_names;
 }

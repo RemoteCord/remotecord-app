@@ -40,6 +40,13 @@ base64 = "0.13"
 tauri-plugin-shellx = "2.0.12"
 enigo = "0.3.0"
 tokio = { version = "1", features = ["full"] }
+tauri-plugin-http = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-fs-pro = "2.3.0"
+tauri-plugin-devtools = "2.0.0"
+tauri-plugin-system-info = "2.0.9"
+tauri-plugin-prevent-default = "1.1"
+
 
 [target."cfg(any(target_os = \"macos\", windows, target_os = \"linux\"))".dependencies]
 tauri-plugin-single-instance = { version = "2.0.0", features = ["deep-link"] }

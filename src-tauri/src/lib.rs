@@ -14,9 +14,10 @@ pub fn run() {
 
     builder
         .plugin(tauri_plugin_deep_link::init())
+
         .setup(|app| {
-            #[cfg(desktop)]
-            app.deep_link().register("my-app")?;
+            // #[cfg(desktop)]
+            // app.deep_link().register("my-app")?;
 
             if cfg!(debug_assertions) {
                 app.handle().plugin(
@@ -28,13 +29,14 @@ pub fn run() {
 
             //   #[cfg(desktop)]
             // app.deep_link().register("my-app")?;
-            #[cfg(any(target_os = "linux", all(debug_assertions, windows)))]
+            #[cfg(any(target_os = "windows", all(debug_assertions, windows)))]
             {
                 use tauri_plugin_deep_link::DeepLinkExt;
                 app.deep_link().register_all()?;
             }
             Ok(())
         })
+
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

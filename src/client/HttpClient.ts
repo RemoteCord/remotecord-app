@@ -1,5 +1,7 @@
 import { env } from "@/env.config";
+import { StoreService } from "@/services/store";
 import axios, { AxiosError } from "axios";
+import axiosTauriApiAdapter from "axios-tauri-api-adapter";
 
 interface FetchOptions {
   url: string;
@@ -67,24 +69,32 @@ class FetchClient {
   }
 }
 
-interface AxiosOptions {
+export interface AxiosOptions {
   url: string;
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-  headers?: Record<string, string> & { session: string };
+  headers?: Record<string, string> & { session?: string };
   data?: string | FormData | URLSearchParams | any;
   params?: Record<string, string>;
 }
+
+const client = axios.create({ adapter: axiosTauriApiAdapter });
 
 class AxiosClient {
   private async customAxios<ResponseJSON>(
     config: AxiosOptions
   ): Promise<ResponseJSON> {
+    const store = new StoreService();
+
+    const authtoken = await store.getRecord("auth");
+
     const headers = {
       "Content-Type": config.headers?.["Content-Type"] || "application/json",
+      Authorization: `Bearer ${authtoken}`,
+
       ...config.headers,
     };
 
-    return axios<ResponseJSON>({
+    return client<ResponseJSON>({
       ...config,
       headers,
       url: `${env.NEXT_PUBLIC_API_URL}${config.url}`,

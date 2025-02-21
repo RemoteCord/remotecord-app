@@ -1,4 +1,4 @@
-use rdev::{listen, EventType, Key, Button};
+use rdev::{listen, Button, EventType, Key};
 use std::sync::Arc;
 use tauri::{Emitter, Manager};
 
@@ -47,10 +47,7 @@ pub fn start_keystroke_listener(app: &tauri::App) {
         let window_clone = Arc::clone(&window);
         // let state_clone = Arc::clone(&state);
 
-        
-
         if let Err(error) = listen(move |event| match event.event_type {
-
             EventType::KeyPress(key) => {
                 if let Some(key_str) = get_key_string(key) {
                     (*window_clone).emit("KeyPress", key_str).unwrap();

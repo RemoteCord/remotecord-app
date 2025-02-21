@@ -1,24 +1,25 @@
 "use client";
 
+import HttpClient from "@/client/HttpClient";
 import { useWsContextProvider } from "@/contexts/WsContext";
 
 export function TestRequest() {
   const { connect, wss } = useWsContextProvider();
   const req = async () => {
-    const response = await fetch("https://api.luqueee.dev/");
+    // const response = await fetch("https://api.luqueee.dev/");
+    // const data = await response.json();
+    // console.log(data);
 
-    const data = await response.json();
-    console.log(data);
+    const res = await HttpClient.axios.get({
+      url: "/protected",
+    });
+
+    console.log("res", res);
   };
 
   const sendMessage = () => {
     if (wss) {
-      wss.send(
-        JSON.stringify({
-          type: "difuse",
-          message: "holaaaa",
-        })
-      );
+      wss.emit("createController", { aa: "aaa" });
     }
   };
 
