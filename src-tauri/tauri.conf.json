@@ -5,7 +5,7 @@
   "identifier": "com.luqueee.dev",
   "build": {
     "frontendDist": "../out",
-    "devUrl": "http://localhost:3002",
+    "devUrl": "http://localhost:3007",
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build"
   },
