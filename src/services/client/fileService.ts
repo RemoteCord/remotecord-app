@@ -40,8 +40,7 @@ export class ClientFileService {
   ): Promise<FileRequest> => {
     try {
       // const filePath = await path.resolveResource("test-file.txt");
-      // console.log("getFileFromClient", fileroute, BaseDirectory, desktopDir);
-
+      console.log("getFileFromClient", fileroute, BaseDirectory);
       fileroute = fileroute.replaceAll("\\", "/");
       const [folder, ...rest] = fileroute.split("/");
 

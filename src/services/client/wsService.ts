@@ -8,6 +8,13 @@ export class WsService {
     this.socket = socket;
   }
 
+  uploadFile = async (data: WS.UploadFile) => {
+    try {
+      const { fileroute } = data;
+      console.log("uploadFile", data);
+    } catch (error) {}
+  };
+
   getFilesFolder = async (data: WS.GetFilesFolder) => {
     try {
       const { folder, relativepath } = data;

@@ -7,4 +7,8 @@ namespace WS {
   export interface GetFileFromClient {
     fileroute: string;
   }
+
+  export interface UploadFile {
+    fileroute: string;
+  }
 }

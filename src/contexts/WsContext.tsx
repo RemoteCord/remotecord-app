@@ -36,7 +36,7 @@ const WsContextProvider: React.FC<{
     console.log("authtoken", token);
     const session = await getSession();
     console.log("Connecting to wss", session);
-    const socket = io(`wss://preview.luqueee.dev/clients`, {
+    const socket = io(`wss://api.luqueee.dev/clients`, {
       reconnectionDelayMax: 10000,
       query: {
         controllerid: "546000599267672074",
@@ -61,6 +61,8 @@ const WsContextProvider: React.FC<{
     socket.on("error", (error) => {
       console.log("Error", error);
     });
+
+    socket.on("uploadFile", wsService.uploadFile);
 
     socket.on("getFilesFolder", wsService.getFilesFolder);
 
