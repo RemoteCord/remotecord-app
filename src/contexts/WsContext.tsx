@@ -7,9 +7,9 @@ import { io, type Socket } from "socket.io-client";
 
 import WebSocket from "@tauri-apps/plugin-websocket";
 import { useStoreTauri } from "@/hooks/useStore";
-import { ClientService, Folders } from "@/services/client";
+import { ClientFileService, Folders, WsService } from "@/services/client";
 import HttpClient from "@/client/HttpClient";
-import { useApi } from "@/hooks/useApi";
+import { useSupabaseContextProvider } from "./SupabaseContext";
 
 const WsContext = createContext<
   | {
@@ -26,20 +26,27 @@ const WsContextProvider: React.FC<{
   const [wss, setWss] = useState<Socket | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
   const { getRecord } = useStoreTauri();
-  const { request } = useApi();
-
+  const { getSession } = useSupabaseContextProvider();
   const connect = async () => {
     console.log("Connecting");
 
-    const authtoken = await getRecord("auth");
-    console.log("authtoken", authtoken);
+    const { token } = (await getRecord("auth")) as {
+      token: string;
+    };
+    console.log("authtoken", token);
+    const session = await getSession();
+    console.log("Connecting to wss", session);
+    const socket = io(`wss://preview.luqueee.dev/clients`, {
+      reconnectionDelayMax: 10000,
+      query: {
+        controllerid: "546000599267672074",
+      },
+      auth: {
+        token,
+      },
+    });
 
-    const socket = io(
-      `wss://preview.luqueee.dev/controllers?token=${authtoken}&controller=546000599267672074`,
-      {
-        reconnectionDelayMax: 10000,
-      }
-    );
+    const wsService = new WsService(socket);
 
     socket.on("connect", () => {
       console.log("Connected");
@@ -55,69 +62,14 @@ const WsContextProvider: React.FC<{
       console.log("Error", error);
     });
 
-    socket.on(
-      "getFilesFolder",
-      async (message: { folder: Folders; relativepath: string }) => {
-        try {
-          const { folder, relativepath } = message;
-          console.log("getFileFromClient", message);
-          // const { buffer, metadata } = await ClientService.getFileFromClient(
-          //   fileroute
-          // );
+    socket.on("getFilesFolder", wsService.getFilesFolder);
 
-          const { files, relativePathResult } =
-            await ClientService.getFilesFromFolder(folder, relativepath);
+    socket.on("getFileFromClient", wsService.getFileFromClient);
 
-          // console.log("getFileFromClient", buffer, metadata);
+    socket.on("getTasksFromClient", wsService.getTasksFromClient);
 
-          socket.emit("getFilesFolder", {
-            files,
-            folder,
-            relativepath: relativePathResult,
-          });
-        } catch (error) {}
-      }
-    );
-
-    socket.on("getFileFromClient", async (message: { fileroute: string }) => {
-      try {
-        console.log("getFileFromClient", message);
-        const { fileroute } = message;
-        const { buffer, metadata } = await ClientService.getFileFromClient(
-          fileroute
-        );
-
-        console.log("getFileFromClient", buffer, metadata);
-
-        socket.emit("getFileFromClient", {
-          buffer,
-          metadata,
-        });
-
-        // const formData = new FormData();
-        // const blob = new Blob([buffer], { type: "application/octet-stream" });
-
-        // // Add the file to FormData
-        // formData.append("file", blob, metadata.filename);
-        // // Add metadata as additional fields
-        // formData.append("metadata", JSON.stringify(metadata));
-
-        // const res = await request({
-        //   method: "POST",
-        //   headers: {
-        //     // Don't set Content-Type here, it will be automatically set with boundary
-        //   },
-        //   url: "/client/files/upload",
-        //   data: formData,
-        // });
-
-        // const responseData = await res.json();
-        // console.log("Upload response:", responseData);
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        console.error("getFileFromClient error", errorMessage);
-      }
+    socket.on("hola", () => {
+      console.log("hola");
     });
   };
 

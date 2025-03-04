@@ -12,6 +12,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { useEffect } from "react";
+import SupabaseContextProvider from "@/contexts/SupabaseContext";
+import { Providers } from "@/contexts/Providers";
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -40,7 +43,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen w-screen m-0 p-0  box-border overflow-x-hidden`}
       >
-        <SidebarProvider>
+        <Providers>
           <AppSidebar />
           <main className="w-full p-4">
             <SidebarTrigger />
@@ -51,7 +54,7 @@ export default function RootLayout({
             </div>
           </main>
           <Toaster />
-        </SidebarProvider>
+        </Providers>
       </body>
     </html>
   );

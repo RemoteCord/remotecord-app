@@ -22,14 +22,13 @@ const SessionContextProvider: React.FC<{
 
   useEffect(() => {
     const handleFetchStore = async () => {
-      const data = (await getRecord("auth")) as string;
-      const allrecord = await getAllRecords();
-      console.log("session", data, pathname, allrecord);
-
-      setSession(data);
-      if (!data && pathname !== "/auth") {
-        window.location.href = "/auth";
-      }
+      // const data = (await getRecord("auth")) as string;
+      // const allrecord = await getAllRecords();
+      // console.log("session", data, pathname, allrecord);
+      // setSession(data);
+      // if (!data && pathname !== "/auth") {
+      //   window.location.href = "/auth";
+      // }
     };
     handleFetchStore();
   }, []);

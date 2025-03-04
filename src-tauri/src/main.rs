@@ -73,6 +73,7 @@ fn main() {
 
         .plugin(tauri_plugin_fs_pro::init())
         .plugin(tauri_plugin_system_info::init())
+        .plugin(tauri_plugin_oauth::init())
 
         .plugin(tauri_plugin_shellx::init(unlocked))
         .plugin(tauri_plugin_os::init())

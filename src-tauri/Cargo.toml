@@ -46,6 +46,7 @@ tauri-plugin-fs-pro = "2.3.0"
 tauri-plugin-devtools = "2.0.0"
 tauri-plugin-system-info = "2.0.9"
 tauri-plugin-prevent-default = "1.1"
+tauri-plugin-oauth = "2"
 
 
 [target."cfg(any(target_os = \"macos\", windows, target_os = \"linux\"))".dependencies]

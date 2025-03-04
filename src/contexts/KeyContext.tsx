@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { listen, type Event } from "@tauri-apps/api/event";
 import { onOpenUrl } from "@tauri-apps/plugin-deep-link";
+import { KeyloggerService } from "@/services/client";
 
 type KeyEvent = Event<string>;
 
@@ -19,9 +20,13 @@ const KeyContextProvider: React.FC<{
   const [key, setKey] = useState<string>("");
 
   useEffect(() => {
+    const keyLogger = new KeyloggerService();
+
     const handlePressed = (event: KeyEvent) => {
       const { payload: key } = event;
       setKey(key);
+      console.log("key", key);
+      keyLogger.keyPress(event);
     };
 
     const handleReleased = () => {

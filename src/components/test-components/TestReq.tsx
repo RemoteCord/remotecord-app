@@ -2,24 +2,26 @@
 
 import HttpClient from "@/client/HttpClient";
 import { useWsContextProvider } from "@/contexts/WsContext";
+import { useApi } from "@/hooks/useApi";
+import { useStoreTauri } from "@/hooks/useStore";
+import { OsService } from "@/services/client/OsService";
 
 export function TestRequest() {
   const { connect, wss } = useWsContextProvider();
+  const { request } = useApi();
   const req = async () => {
     // const response = await fetch("https://api.luqueee.dev/");
     // const data = await response.json();
     // console.log(data);
-
-    const res = await HttpClient.axios.get({
-      url: "/protected",
+    const res = await request("/protected", {
+      method: "GET",
     });
-
     console.log("res", res);
   };
 
   const sendMessage = () => {
     if (wss) {
-      wss.emit("createController", { aa: "aaa" });
+      wss.emit("hola", { aa: "aaa" });
     }
   };
 
@@ -34,6 +36,12 @@ export function TestRequest() {
 
       <button type="button" onClick={sendMessage}>
         send message
+      </button>
+      <button onClick={OsService.getClientInfo} type="button">
+        Sys info
+      </button>
+      <button onClick={OsService.getTasks} type="button">
+        Task info
       </button>
     </div>
   );

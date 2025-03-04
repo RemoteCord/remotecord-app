@@ -14,11 +14,16 @@
     "store:default",
     "shellx:allow-execute",
     "shellx:allow-spawn",
+    "shellx:allow-open",
+    "oauth:allow-start",
     {
       "identifier": "http:default",
       "allow": [
         {
           "url": "https://*.luqueee.dev"
+        },
+        {
+          "url": "http://localhost:3002"
         }
       ],
       "deny": [
@@ -70,6 +75,7 @@
       ]
     },
 
-    "fs-pro:default"
+    "fs-pro:default",
+    "system-info:allow-all"
   ]
 }

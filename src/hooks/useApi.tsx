@@ -1,35 +1,36 @@
-"use client";
-
-import { AxiosOptions } from "@/client/HttpClient";
+import { useSupabaseContextProvider } from "@/contexts/SupabaseContext";
+import { ClientOptions, fetch } from "@tauri-apps/plugin-http";
 import { useStoreTauri } from "./useStore";
-import { env } from "@/env.config";
-import { fetch } from "@tauri-apps/plugin-http";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const useApi = () => {
+  const { supabase } = useSupabaseContextProvider();
   const { getRecord } = useStoreTauri();
-
-  const request = async (config: AxiosOptions) => {
-    const authtoken = await getRecord("auth");
-
-    const headers = {
-      Authorization: `Bearer ${authtoken}`,
-      ...config.headers,
+  const request = async (
+    input: URL | Request | string,
+    init?: RequestInit & ClientOptions
+  ) => {
+    const { session } = (await supabase?.auth.getSession())?.data || {};
+    const auth = (await getRecord("auth")) as {
+      token: string;
+    };
+    const { token } = auth;
+    console.log("session", session);
+    const headersData = {
+      headers: {
+        Authorization: "Bearer " + token,
+        ...init?.headers,
+      },
+      ...init,
     };
 
-    // Don't stringify if it's FormData
-    const body =
-      config.data instanceof FormData
-        ? config.data
-        : JSON.stringify(config.data);
-
-    const url = `${env.NEXT_PUBLIC_API_URL}${config.url}`;
-
-    return await fetch(url, {
-      method: config.method,
-      headers,
-      body,
-    });
+    try {
+      const response = await fetch(`${API_URL}${input}`, headersData);
+      return await response.json();
+    } catch (err: any) {
+      throw err;
+    }
   };
-
   return { request };
 };

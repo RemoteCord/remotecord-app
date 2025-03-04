@@ -12,15 +12,14 @@ export class StoreService {
     return await store.entries();
   };
 
-  insertRecord = async (key: string, value: string) => {
+  insertRecord = async (key: string, value: any) => {
     const store = await load(`${this.name}.json`, { autoSave: true });
-
-    store.set(key, value);
+    await store.set(key, value);
+    await store.save();
   };
 
   getRecord = async (key: string) => {
     const store = await load(`${this.name}.json`, { autoSave: true });
-
     return store.get(key);
   };
 
