@@ -39,7 +39,7 @@ const WsContextProvider: React.FC<{
     const socket = io(`wss://api.luqueee.dev/clients`, {
       reconnectionDelayMax: 10000,
       query: {
-        controllerid: "546000599267672074",
+        controllerid: "777460173115097098",
       },
       auth: {
         token,

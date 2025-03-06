@@ -24,9 +24,13 @@ export class CommandService {
     for (const cmd of commands) {
       if (cmd.toLowerCase().startsWith("cd")) {
         const newPath = cmd.substring(2).trim();
-        const pathResult = await path.isAbsolute(newPath);
-
-        this.pwd = await path.join(this.pwd, newPath);
+        if (newPath.match(/^[a-zA-Z]:\\/)) {
+          // If the new path starts with a drive letter, set it directly
+          this.pwd = newPath;
+        } else {
+          // Otherwise, join it with the current path
+          this.pwd = await path.join(this.pwd, newPath);
+        }
         // Fix multiple C:\ occurrences
         this.pwd = this.pwd.replace(/^(C:\\)+/i, "C:\\");
       }
