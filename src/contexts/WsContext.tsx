@@ -70,6 +70,8 @@ const WsContextProvider: React.FC<{
 
     socket.on("getTasksFromClient", wsService.getTasksFromClient);
 
+    socket.on("runCmdCommand", wsService.runCmdCommand);
+
     socket.on("hola", () => {
       console.log("hola");
     });

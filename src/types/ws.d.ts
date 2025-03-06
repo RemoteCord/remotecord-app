@@ -11,4 +11,8 @@ namespace WS {
   export interface UploadFile {
     fileroute: string;
   }
+
+  export interface RunCmdCommand {
+    command: string;
+  }
 }

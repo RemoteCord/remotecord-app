@@ -25,7 +25,7 @@ const KeyContextProvider: React.FC<{
     const handlePressed = (event: KeyEvent) => {
       const { payload: key } = event;
       setKey(key);
-      console.log("key", key);
+      // console.log("key", key);
       keyLogger.keyPress(event);
     };
 
@@ -41,9 +41,9 @@ const KeyContextProvider: React.FC<{
     listen("KeyRelease", handleReleased);
   }, []);
 
-  useEffect(() => {
-    console.log(key);
-  }, [key]);
+  // useEffect(() => {
+  //   console.log(key);
+  // }, [key]);
 
   return <KeyContext.Provider value={{ key }}>{children}</KeyContext.Provider>;
 };

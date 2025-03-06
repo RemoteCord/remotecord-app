@@ -22,7 +22,7 @@ export class KeyloggerService {
     } else {
       this.keys.push(key);
     }
-    console.log("keys", this.keys);
+    // console.log("keys", this.keys);
   }
 
   // keyRelease() {

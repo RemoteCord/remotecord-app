@@ -35,30 +35,37 @@ async function getPathFolder(folder: Folders) {
 }
 
 export class ClientFileService {
-  static getFileFromClient = async (
-    fileroute: string
-  ): Promise<FileRequest> => {
+  static resolvePath = async (fileroute: string) => {
     try {
-      // const filePath = await path.resolveResource("test-file.txt");
-      console.log("getFileFromClient", fileroute, BaseDirectory);
       fileroute = fileroute.replaceAll("\\", "/");
       const [folder, ...rest] = fileroute.split("/");
-
       const pathDir = await getPathFolder(folder as Folders);
-      const restroute = rest.join("/");
-      const joinpath = await path.join(pathDir, restroute);
+      const joinpath = await path.join(pathDir, rest.join("/"));
+      return joinpath;
+    } catch (error) {
+      console.error("resolvePath", error);
+      throw error;
+    }
+  };
 
-      console.log(
-        "getFileFromClient",
-        joinpath,
-        folder,
-        pathDir,
-        rest,
-        fileroute
-      );
+  static getMetadata = async (path: string) => {
+    try {
+      const metadatafile = await metadata(path);
+      return {
+        ...metadatafile,
+        size: Math.round((metadatafile.size / (1024 * 1024)) * 100) / 100,
+      };
+    } catch (error) {
+      console.error("getMetadata", error);
+      throw error;
+    }
+  };
 
-      const contents = await readFile(joinpath);
-      const metadatafile = await metadata(joinpath);
+  static getFileFromClient = async (path: string): Promise<FileRequest> => {
+    try {
+      // const filePath = await path.resolveResource("test-file.txt");
+      const contents = await readFile(path);
+      const metadatafile = await metadata(path);
       const buffer = new Uint8Array(contents).buffer;
       console.log("contents", contents, metadatafile, buffer);
 
