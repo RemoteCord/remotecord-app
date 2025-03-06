@@ -39,22 +39,22 @@ export const useAuth = () => {
           console.log("res", res);
 
           void HttpClient.axios
-            .post<{ data: { token: string; status: boolean } }>({
-              url: "/auth/callback",
+            .post<{ token: string; status: boolean }>({
+              url: "/api/auth/callback",
               data: {
                 token: access_token,
               },
             })
             .then(async (res) => {
               console.log("res", res);
-              const status = res.data.status;
+              const status = res.status;
 
               if (!status) {
                 return supabase?.auth.signOut();
               }
 
               await insertRecord("auth", {
-                token: res.data.token,
+                token: res.token,
               });
 
               const aa = await getAllRecords();

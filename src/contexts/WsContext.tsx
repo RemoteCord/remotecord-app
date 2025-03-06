@@ -36,7 +36,7 @@ const WsContextProvider: React.FC<{
     console.log("authtoken", token);
     const session = await getSession();
     console.log("Connecting to wss", session);
-    const socket = io(`wss://api.luqueee.dev/clients`, {
+    const socket = io(`wss://api2.luqueee.dev/clients`, {
       reconnectionDelayMax: 10000,
       query: {
         controllerid: "546000599267672074",
