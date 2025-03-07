@@ -1,21 +1,25 @@
 "use client";
 
-// import WebSocket from "@tauri-apps/plugin-websocket";
 import { createContext, useContext, useState } from "react";
-// import io from "socket.io-client";
 import { io, type Socket } from "socket.io-client";
 
-import WebSocket from "@tauri-apps/plugin-websocket";
-import { useStoreTauri } from "@/hooks/useStore";
-import { ClientFileService, Folders, WsService } from "@/services/client";
-import HttpClient from "@/client/HttpClient";
+import { useStoreTauri } from "@/hooks/shared/useStore";
+import { WsService } from "@/services/client";
 import { useSupabaseContextProvider } from "./SupabaseContext";
+import { useLogContextProvider } from "./LogContext";
+
+export type Events =
+  | "uploadFile"
+  | "getFilesFolder"
+  | "getFileFromClient"
+  | "getTasksFromClient"
+  | "runCmdCommand";
 
 const WsContext = createContext<
   | {
       wss: Socket | null;
       connected: boolean;
-      connect: () => Promise<void>;
+      connect: (controllerid: string, username: string) => Promise<void>;
     }
   | undefined
 >(undefined);
@@ -25,21 +29,24 @@ const WsContextProvider: React.FC<{
 }> = ({ children }) => {
   const [wss, setWss] = useState<Socket | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
+  const { appendLog } = useLogContextProvider();
   const { getRecord } = useStoreTauri();
-  const { getSession } = useSupabaseContextProvider();
-  const connect = async () => {
-    console.log("Connecting");
+
+  const connect = async (tokenController: string, username: string) => {
+    if (!tokenController) {
+      console.error("No controllerid token provided to connect function");
+      return;
+    }
 
     const { token } = (await getRecord("auth")) as {
       token: string;
     };
     console.log("authtoken", token);
-    const session = await getSession();
-    console.log("Connecting to wss", session);
-    const socket = io(`wss://api2.luqueee.dev/clients`, {
-      reconnectionDelayMax: 10000,
+
+    console.log("Connecting to ws-client", tokenController, token);
+    const socket = io("wss://api2.luqueee.dev/clients", {
       query: {
-        controllerid: "777460173115097098",
+        tokenController,
       },
       auth: {
         token,
@@ -62,6 +69,8 @@ const WsContextProvider: React.FC<{
       console.log("Error", error);
     });
 
+    socket.on("getScreensFromClient", wsService.getScreensFromClient);
+
     socket.on("uploadFile", wsService.uploadFile);
 
     socket.on("getFilesFolder", wsService.getFilesFolder);
@@ -72,8 +81,13 @@ const WsContextProvider: React.FC<{
 
     socket.on("runCmdCommand", wsService.runCmdCommand);
 
-    socket.on("hola", () => {
-      console.log("hola");
+    socket.onAny((eventName: Events, ...args) => {
+      console.log("onAny", eventName, args);
+      appendLog({
+        type: eventName,
+        controller: username,
+        context: "",
+      });
     });
   };
 
@@ -87,7 +101,9 @@ const WsContextProvider: React.FC<{
 export const useWsContextProvider = () => {
   const context = useContext(WsContext);
   if (context === undefined) {
-    throw new Error("bla bla");
+    throw new Error(
+      "WsContextProvider must be used within a WsContextProvider"
+    );
   }
 
   return context;

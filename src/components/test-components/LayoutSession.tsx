@@ -2,7 +2,6 @@
 
 import KeyContextProvider from "@/contexts/KeyContext";
 import { useSessionContextProvider } from "@/contexts/SessionContext";
-import WsContextProvider from "@/contexts/WsContext";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
@@ -18,9 +17,5 @@ export function LayoutSession({
     getSession();
   }, [pathname]);
 
-  return (
-    <WsContextProvider>
-      <KeyContextProvider>{children}</KeyContextProvider>
-    </WsContextProvider>
-  );
+  return <KeyContextProvider>{children}</KeyContextProvider>;
 }

@@ -2,8 +2,8 @@
 
 import HttpClient from "@/client/HttpClient";
 import { useWsContextProvider } from "@/contexts/WsContext";
-import { useApi } from "@/hooks/useApi";
-import { useStoreTauri } from "@/hooks/useStore";
+import { useApi } from "@/hooks/shared/useApi";
+import { useStoreTauri } from "@/hooks/shared/useStore";
 import { OsService } from "@/services/client/OsService";
 
 export function TestRequest() {

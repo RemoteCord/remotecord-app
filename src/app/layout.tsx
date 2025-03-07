@@ -47,7 +47,7 @@ export default function RootLayout({
           <AppSidebar />
           <main className="w-full p-4">
             <SidebarTrigger />
-            <div className="overflow-y-auto h-full">
+            <div className="overflow-y-auto max-h-screen">
               <SessionContextProvider>
                 <LayoutSession>{children}</LayoutSession>
               </SessionContextProvider>

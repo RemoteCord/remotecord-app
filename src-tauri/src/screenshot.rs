@@ -29,6 +29,7 @@ pub struct ScreenInfo {
     id: u32,
     resolution: (u32, u32),
     frequency: f32,
+    isprimary: bool,
 }
 
 #[tauri::command]
@@ -41,6 +42,8 @@ pub fn get_screens() -> Vec<ScreenInfo> {
             id: screen.display_info.id as u32,
             resolution: (screen.display_info.width, screen.display_info.height),
             frequency: screen.display_info.frequency,
+            isprimary: screen.display_info.is_primary,
+            
         });
     }
     return screen_names;

@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import { load } from "@tauri-apps/plugin-store";
 import { usePathname } from "next/navigation";
-import { useStoreTauri } from "@/hooks/useStore";
+import { useStoreTauri } from "@/hooks/shared/useStore";
 
 const SessionContext = createContext<
   | {

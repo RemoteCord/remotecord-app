@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import { load } from "@tauri-apps/plugin-store";
 import { usePathname } from "next/navigation";
-import { useStoreTauri } from "@/hooks/useStore";
+import { useStoreTauri } from "@/hooks/shared/useStore";
 import { createClient, Session, SupabaseClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;

@@ -1,4 +1,5 @@
 import { fromBytesToMB } from "@/lib/utils";
+import { invoke } from "@tauri-apps/api/core";
 import {
   allSysInfo,
   AllSystemInfo,
@@ -32,6 +33,17 @@ export class OsService {
       total_mem: result.total_memory,
       used_mem: result.used_memory,
     };
+  };
+
+  static getScreens = async () => {
+    const screensArray = (await invoke("get_screens")) as {
+      id: number;
+      resolution: [number, number];
+      frequency: number;
+      isprimary: boolean;
+    }[];
+    console.log("screens", screensArray);
+    return screensArray.map((screen) => screen);
   };
 
   static getTasks = async () => {

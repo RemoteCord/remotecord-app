@@ -1,6 +1,6 @@
 "use client";
 
-import { UseNotification } from "@/hooks/useNotification";
+import { UseNotification } from "@/hooks/shared/useNotification";
 import { fetch } from "@tauri-apps/plugin-http";
 
 export function SendRequest() {

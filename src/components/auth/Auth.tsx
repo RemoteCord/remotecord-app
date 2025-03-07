@@ -4,7 +4,7 @@ import { open } from "tauri-plugin-shellx-api";
 import { invoke } from "@tauri-apps/api/core";
 import { useSupabaseContextProvider } from "@/contexts/SupabaseContext";
 import HttpClient from "@/client/HttpClient";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../../hooks/auth/useAuth";
 
 export default function Auth() {
   const { onProviderLogin, getSession, signOut } = useAuth();

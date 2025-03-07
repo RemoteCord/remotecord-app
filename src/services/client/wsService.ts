@@ -31,6 +31,14 @@ export class WsService {
     } catch (error) {}
   };
 
+  getScreensFromClient = async () => {
+    const screens = await OsService.getScreens();
+
+    this.socket.emit("getScreensFromClient", {
+      screens,
+    });
+  };
+
   getFilesFolder = async (data: WS.GetFilesFolder) => {
     try {
       const { folder, relativepath } = data;
