@@ -61,28 +61,29 @@ export class ClientFileService {
     }
   };
 
-  static getFileFromClient = async (path: string): Promise<FileRequest> => {
+  static getFileFromClient = async (filePath: string): Promise<FileRequest> => {
     try {
-      // const filePath = await path.resolveResource("test-file.txt");
-      const contents = await readFile(path);
-      const metadatafile = await metadata(path);
+      // Read file contents asynchronously
+      const [contents, metadatafile] = await Promise.all([
+        readFile(filePath),
+        metadata(filePath),
+      ]);
+
       const buffer = new Uint8Array(contents).buffer;
+
       console.log("contents", contents, metadatafile, buffer);
 
       return {
         buffer,
         metadata: {
+          type: metadatafile.extname,
           filename: metadatafile.fullName,
-          size: metadatafile.size,
+          size: Math.round((metadatafile.size / (1024 * 1024)) * 100) / 100,
           format: metadatafile.extname,
         },
       };
-      // const folder = await readDir("astro", {
-      //   baseDir: BaseDirectory.AppData,
-      // });
-      // console.log("folder", folder);
     } catch (error) {
-      console.error("getFileFromClient", error);
+      console.error("getFileFromClient error", error);
       throw error;
     }
   };

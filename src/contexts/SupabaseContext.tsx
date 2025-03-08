@@ -14,7 +14,7 @@ const SupabaseContext = createContext<
   | {
       supabase: SupabaseClient<any, "public", any> | undefined;
       signOut: () => Promise<void>;
-      getSession: () => Promise<Session | null>;
+      session: Session | null;
     }
   | undefined
 >(undefined);
@@ -24,7 +24,10 @@ const SupabaseContextProvider: React.FC<{
 }> = ({ children }) => {
   const [supabase, setSupabaseClient] =
     useState<SupabaseClient<any, "public", any>>();
-  const { getAllRecords } = useStoreTauri();
+
+  const [session, setSession] = useState<Session | null>(null);
+
+  const { getAllRecords, getRecord } = useStoreTauri();
   useEffect(() => {
     const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
@@ -41,6 +44,7 @@ const SupabaseContextProvider: React.FC<{
     // });
 
     setSupabaseClient(supabaseClient);
+    getSession(supabaseClient);
   }, []);
 
   const signOut = async () => {
@@ -51,15 +55,18 @@ const SupabaseContextProvider: React.FC<{
     }
   };
 
-  const getSession = async () => {
-    const records = await getAllRecords();
-    console.log("records", records);
-    const response = await supabase?.auth.getSession();
-    return response?.data.session || null;
+  const getSession = async (client: SupabaseClient) => {
+    // const { data, error } = await client.auth.getUser(token);
+    client.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        console.log("Session active:", session);
+        setSession(session);
+      }
+    });
   };
 
   return (
-    <SupabaseContext.Provider value={{ supabase, signOut, getSession }}>
+    <SupabaseContext.Provider value={{ supabase, signOut, session }}>
       {children}
     </SupabaseContext.Provider>
   );

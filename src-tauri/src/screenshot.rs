@@ -43,7 +43,6 @@ pub fn get_screens() -> Vec<ScreenInfo> {
             resolution: (screen.display_info.width, screen.display_info.height),
             frequency: screen.display_info.frequency,
             isprimary: screen.display_info.is_primary,
-            
         });
     }
     return screen_names;

@@ -9,18 +9,18 @@ function getLocalHostUrl(port: number) {
   return `http://localhost:${port}`;
 }
 export const useAuth = () => {
-  const { supabase, getSession, signOut } = useSupabaseContextProvider();
+  const { supabase, session, signOut } = useSupabaseContextProvider();
   const { insertRecord, getAllRecords } = useStoreTauri();
   const [port, setPort] = useState<number | null>(null);
-  useEffect(() => {
-    if (supabase) {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) {
-          console.log("Session active:", session);
-        }
-      });
-    }
-  }, [supabase]);
+  // useEffect(() => {
+  //   if (supabase) {
+  //     supabase.auth.getSession().then(({ data: { session } }) => {
+  //       if (session) {
+  //         console.log("Session active:", session);
+  //       }
+  //     });
+  //   }
+  // }, [supabase]);
   useEffect(() => {
     let _port: number | null = null;
     const unlisten = listen("oauth://url", (data) => {
@@ -98,5 +98,5 @@ export const useAuth = () => {
     }
   };
 
-  return { onProviderLogin, getSession, signOut };
+  return { onProviderLogin, signOut };
 };

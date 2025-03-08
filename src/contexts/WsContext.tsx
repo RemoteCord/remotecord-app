@@ -7,6 +7,8 @@ import { useStoreTauri } from "@/hooks/shared/useStore";
 import { WsService } from "@/services/client";
 import { useSupabaseContextProvider } from "./SupabaseContext";
 import { useLogContextProvider } from "./LogContext";
+import { download } from "@tauri-apps/plugin-upload";
+import { useToast } from "@/hooks/shared/use-toast";
 
 export type Events =
   | "uploadFile"
@@ -19,6 +21,12 @@ const WsContext = createContext<
   | {
       wss: Socket | null;
       connected: boolean;
+      file: {
+        progress: number;
+        total: number;
+        filename: string;
+      };
+      downloading: boolean;
       connect: (controllerid: string, username: string) => Promise<void>;
     }
   | undefined
@@ -31,6 +39,16 @@ const WsContextProvider: React.FC<{
   const [connected, setConnected] = useState<boolean>(false);
   const { appendLog } = useLogContextProvider();
   const { getRecord } = useStoreTauri();
+  const [downloading, setDownloading] = useState<boolean>(false);
+  const [file, setFile] = useState<{
+    progress: number;
+    total: number;
+    filename: string;
+  }>({
+    progress: 0,
+    total: 0,
+    filename: "",
+  });
 
   const connect = async (tokenController: string, username: string) => {
     if (!tokenController) {
@@ -71,7 +89,33 @@ const WsContextProvider: React.FC<{
 
     socket.on("getScreensFromClient", wsService.getScreensFromClient);
 
-    socket.on("uploadFile", wsService.uploadFile);
+    socket.on("uploadFile", (data: WS.UploadFile) => {
+      const { fileroute } = data;
+      console.log("uploadFile", data);
+      let progressDownload = 0;
+      const filename = fileroute
+        .split("/")
+        .filter((route) => route.includes("?"))[0]
+        .split("?")[0];
+      const downloadPath = `C:/Users/luque/Desktop/${filename}`;
+
+      download(fileroute, downloadPath, ({ progress, total }) => {
+        if (progressDownload === 0) setDownloading(true);
+        progressDownload += progress;
+        console.log(
+          `Downloaded ${progress} ${progressDownload} of ${total} bytes`
+        );
+        setFile({
+          progress: progressDownload,
+          total,
+          filename,
+        });
+
+        if (progressDownload === total) {
+          setDownloading(false);
+        }
+      });
+    });
 
     socket.on("getFilesFolder", wsService.getFilesFolder);
 
@@ -92,7 +136,7 @@ const WsContextProvider: React.FC<{
   };
 
   return (
-    <WsContext.Provider value={{ wss, connect, connected }}>
+    <WsContext.Provider value={{ wss, connect, file, connected, downloading }}>
       {children}
     </WsContext.Provider>
   );

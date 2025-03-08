@@ -7,14 +7,14 @@ import HttpClient from "@/client/HttpClient";
 import { useAuth } from "../../hooks/auth/useAuth";
 
 export default function Auth() {
-  const { onProviderLogin, getSession, signOut } = useAuth();
+  const { onProviderLogin, signOut } = useAuth();
 
   return (
     <div className="row flex flex-center">
       <div className="flex flex-col">
         <button onClick={onProviderLogin("google")}>Google</button>
         <button onClick={signOut}>Sign out</button>
-        <button onClick={getSession}>Get session</button>
+        {/* <button onClick={getSession}>Get session</button> */}
       </div>
     </div>
   );

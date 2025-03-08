@@ -7,14 +7,6 @@ import { useStoreTauri } from "@/hooks/shared/useStore";
 import { useWsContextProvider } from "./WsContext";
 import { wsManager } from "@/client/WsClient";
 
-const WsApplicationContext = createContext<
-  | {
-      wssApplication: Socket | null;
-      connected: boolean;
-    }
-  | undefined
->(undefined);
-
 import {
   Dialog,
   DialogContent,
@@ -26,9 +18,7 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
-const WsApplicationContextProvider: React.FC<{
-  children: React.ReactNode;
-}> = ({ children }) => {
+export const WsApplication: React.FC<{}> = () => {
   const [wssApplication, setWssApplication] = useState<Socket | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -115,51 +105,32 @@ const WsApplicationContextProvider: React.FC<{
   };
 
   return (
-    <WsApplicationContext.Provider value={{ wssApplication, connected }}>
-      <Dialog open={openModal}>
-        <DialogContent>
-          <DialogHeader className="flex flex-col gap-4">
-            <DialogTitle className="flex gap-4 items-center">
-              <span>
-                {controllerData?.avatar && (
-                  <Image
-                    src={controllerData?.avatar}
-                    alt="avatar"
-                    width={50}
-                    height={50}
-                    className="rounded-full"
-                  />
-                )}
-              </span>
-              {controllerData?.username} wants to connect
-            </DialogTitle>
-            <DialogDescription className="flex gap-8">
-              <Button onClick={handleAcceptConnection}>Accept</Button>
+    <Dialog open={openModal}>
+      <DialogContent>
+        <DialogHeader className="flex flex-col gap-4">
+          <DialogTitle className="flex gap-4 items-center">
+            <span>
+              {controllerData?.avatar && (
+                <Image
+                  src={controllerData?.avatar}
+                  alt="avatar"
+                  width={50}
+                  height={50}
+                  className="rounded-full"
+                />
+              )}
+            </span>
+            {controllerData?.username} wants to connect
+          </DialogTitle>
+          <DialogDescription className="flex gap-8">
+            <Button onClick={handleAcceptConnection}>Accept</Button>
 
-              <Button
-                variant={"destructive"}
-                onClick={() => setOpenModal(false)}
-              >
-                Cancel
-              </Button>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-      {children}
-    </WsApplicationContext.Provider>
+            <Button variant={"destructive"} onClick={() => setOpenModal(false)}>
+              Cancel
+            </Button>
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
   );
 };
-
-export const useWsApplicationContextProvider = () => {
-  const context = useContext(WsApplicationContext);
-  if (context === undefined) {
-    throw new Error(
-      "WsApplicationContextProvider must be used within a WsApplicationContextProvider"
-    );
-  }
-
-  return context;
-};
-
-export default WsApplicationContextProvider;

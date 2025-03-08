@@ -1,6 +1,5 @@
 import { env } from "@/env.config";
 import { StoreService } from "@/services/store";
-import { getSession } from "@auth0/nextjs-auth0";
 import axios, { AxiosError } from "axios";
 import axiosTauriApiAdapter from "axios-tauri-api-adapter";
 

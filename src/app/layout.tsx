@@ -5,15 +5,14 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { onOpenUrl } from "@tauri-apps/plugin-deep-link";
 
-import { LayoutSession } from "@/components/test-components/LayoutSession";
 import { cookies } from "next/headers";
-import SessionContextProvider from "@/contexts/SessionContext";
 import { Toaster } from "@/components/ui/toaster";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { useEffect } from "react";
 import SupabaseContextProvider from "@/contexts/SupabaseContext";
 import { Providers } from "@/contexts/Providers";
+import { NavBar } from "@/components/Navbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -41,17 +40,14 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen w-screen m-0 p-0  box-border overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen w-screen m-0 p-0  box-border overflow-x-hidden `}
       >
         <Providers>
-          <AppSidebar />
-          <main className="w-full p-4">
-            <SidebarTrigger />
-            <div className="overflow-y-auto max-h-screen">
-              <SessionContextProvider>
-                <LayoutSession>{children}</LayoutSession>
-              </SessionContextProvider>
-            </div>
+          <main className="w-screen h-screen grid grid-rows-[auto_1fr]">
+            <NavBar />
+            {/* <AppSidebar /> */}
+            {/* <SidebarTrigger /> */}
+            <div className="overflow-y-auto max-h-screen p-4">{children}</div>
           </main>
           <Toaster />
         </Providers>

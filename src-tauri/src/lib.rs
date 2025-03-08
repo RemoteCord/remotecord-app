@@ -14,7 +14,6 @@ pub fn run() {
 
     builder
         .plugin(tauri_plugin_deep_link::init())
-
         .setup(|app| {
             // #[cfg(desktop)]
             // app.deep_link().register("my-app")?;
@@ -36,7 +35,6 @@ pub fn run() {
             }
             Ok(())
         })
-
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

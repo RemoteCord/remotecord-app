@@ -79,6 +79,8 @@
     },
 
     "fs-pro:default",
-    "system-info:allow-all"
+    "system-info:allow-all",
+    "upload:allow-upload",
+    "upload:allow-download"
   ]
 }

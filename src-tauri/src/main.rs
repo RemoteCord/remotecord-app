@@ -3,6 +3,7 @@
 
 use rdev::{listen, simulate, EventType, SimulateError};
 use serde::{Deserialize, Serialize};
+use tauri_plugin_http::reqwest;
 use std::sync::{Arc, Mutex};
 use std::{thread, time::Duration};
 use tauri::State;
@@ -10,6 +11,7 @@ use tauri::State;
 use keystroke::start_keystroke_listener;
 use std::sync::atomic::{AtomicBool, Ordering};
 // use tauri::{Manager};
+use log::error;
 
 mod keystroke;
 // mod tray;
@@ -24,18 +26,30 @@ struct MacroState {
 fn main() {
     let unlocked = true;
 
-     #[cfg(debug_assertions)] // only enable instrumentation in development builds
+    #[cfg(debug_assertions)] // only enable instrumentation in development builds
     let devtools = tauri_plugin_devtools::init();
 
 
+    let context = std::thread::Builder::new()
+        .stack_size(100 * 1024 * 1024)  // 100 MiB in bytes
+        .spawn(|| tauri::generate_context!())
+        .expect("Failed to spawn context thread")
+        .join()
+        .expect("context thread");
+
+    std::panic::set_hook(Box::new(|info| {
+        error!("Panicked: {:?}", info);
+    }));
+
     let mut tauri_app = tauri::Builder::default()
+        .plugin(tauri_plugin_upload::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_deep_link::init())
         .manage(MacroState::default());
 
-      #[cfg(debug_assertions)]
+    #[cfg(debug_assertions)]
     {
         tauri_app = tauri_app.plugin(devtools);
     }
@@ -64,24 +78,57 @@ fn main() {
             start_recording,
             stop_recording,
             play_macro,
+            handle_file_upload,
             screenshot::capture,
             screenshot::get_screens
         ])
         .plugin(tauri_plugin_websocket::init())
         // .plugin(tauri_plugin_shell::init())
         //   .plugin(tauri_plugin_prevent_default::init())
-
         .plugin(tauri_plugin_fs_pro::init())
         .plugin(tauri_plugin_system_info::init())
         .plugin(tauri_plugin_oauth::init())
-
         .plugin(tauri_plugin_shellx::init(unlocked))
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
-        .run(tauri::generate_context!())
+        .run(context)
+        // .run(tauri::generate_context!())
+
         .expect("error while running tauri application");
 }
+
+#[tauri::command]
+async fn handle_file_upload(
+    buffer: Vec<u8>,
+    filename: String,
+    token: String,
+    tokenfile: String,
+    apiurl: String,
+) -> Result<(), String> {
+    let client = reqwest::Client::new();
+    let form = reqwest::multipart::Form::new()
+        .part("file", reqwest::multipart::Part::bytes(buffer)
+            .file_name(filename)
+            .mime_str("application/octet-stream")
+            .map_err(|e| e.to_string())?)
+        .text("tokenFile", tokenfile);
+
+    let response = client
+        .post(format!("{}/api/clients/file/upload", apiurl))
+        .header("Authorization", format!("Bearer {}", token))
+        .multipart(form)
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if response.status().is_success() {
+        Ok(())
+    } else {
+        Err(format!("Upload failed with status: {}", response.status()))
+    }
+}
+
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 struct SerializableEventType {

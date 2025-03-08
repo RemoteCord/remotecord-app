@@ -1,8 +1,12 @@
 import { Socket } from "socket.io-client";
 import { ClientFileService } from "./fileService";
 import { OsService } from "./OsService";
-import { litterbox } from "./catbox";
+import { StoreService } from "../store";
+import { invoke } from "@tauri-apps/api/core";
 import { commandService } from "./commandService";
+import { download } from "@tauri-apps/plugin-upload";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export class WsService {
   private socket: Socket;
@@ -10,16 +14,18 @@ export class WsService {
     this.socket = socket;
   }
 
-  uploadFile = async (data: WS.UploadFile) => {
-    try {
-      const { fileroute } = data;
-      console.log("uploadFile", data);
-    } catch (error) {}
-  };
+  // uploadFile = async (data: WS.UploadFile) => {
+  //   try {
+
+  //   } catch (error) {
+  //     console.error("uploadFile error", error);
+  //   }
+  // };
+
   runCmdCommand = async (data: WS.RunCmdCommand) => {
     try {
       const { command } = data;
-
+      console.log(`runCmdCommand`, command);
       const { stdout, pwd } = await commandService.executeCommand(command);
 
       this.socket.emit("runCmdCommand", {
@@ -28,7 +34,9 @@ export class WsService {
       });
 
       console.log("run command", data);
-    } catch (error) {}
+    } catch (error) {
+      console.error("runCmdCommand error", error);
+    }
   };
 
   getScreensFromClient = async () => {
@@ -52,40 +60,39 @@ export class WsService {
         folder,
         relativepath: relativePathResult,
       });
-    } catch (error) {}
+    } catch (error) {
+      console.error("getFilesFolder error", error);
+    }
   };
 
   getFileFromClient = async (data: WS.GetFileFromClient) => {
     try {
+      const store = new StoreService();
+
+      const { token } = (await store.getRecord("auth")) as {
+        token: string;
+      };
+
+      console.log("authtoken", token);
       console.log("getFileFromClient", data);
-      const { fileroute } = data;
+      const { fileroute, tokenFile } = data;
 
       const path = await ClientFileService.resolvePath(fileroute);
       if (!path) return;
-      const { size, name } = await ClientFileService.getMetadata(path);
-      console.log("metadataFile", size, name);
 
-      if (size <= 10) {
-        const { buffer, metadata } = await ClientFileService.getFileFromClient(
-          path
-        );
-
-        console.log("getFileFromClient result", buffer, metadata, size);
-        this.socket.emit("getFileFromClient", {
-          buffer,
-          metadata,
-        });
-      } else {
-        const res = await litterbox
-          .upload({
-            path,
-            duration: "12h",
-          })
-          .catch((err) => {
-            console.error(err);
+      void ClientFileService.getFileFromClient(path).then(
+        async ({ buffer, metadata }) => {
+          invoke("handle_file_upload", {
+            buffer,
+            filename: metadata.filename,
+            token,
+            tokenfile: tokenFile,
+            apiurl: API_URL, // Ensure api_url is passed here
+          }).catch((err: any) => {
+            console.error("handle_file_upload error", err);
           });
-        console.log("litterbox", res);
-      }
+        }
+      );
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
