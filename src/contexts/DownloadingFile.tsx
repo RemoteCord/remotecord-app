@@ -28,7 +28,7 @@ export const DownloadingFile: React.FC<{}> = () => {
       <DialogContent>
         <DialogHeader className="flex flex-col gap-4">
           <DialogTitle className="flex gap-4 items-center">
-            Downloading...
+            Downloading... {file.filename}
           </DialogTitle>
           <DialogDescription className="flex gap-8">
             {/* <Button onClick={handleAcceptConnection}>Accept</Button> */}
