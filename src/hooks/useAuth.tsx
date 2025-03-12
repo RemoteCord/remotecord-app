@@ -1,6 +1,6 @@
 import HttpClient from "@/client/HttpClient";
 import { useSupabaseContextProvider } from "@/contexts/SupabaseContext";
-import { useStoreTauri } from "@/hooks/shared/useStore";
+import { useStoreTauri } from "@/hooks/useStore";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
@@ -38,7 +38,7 @@ export const useAuth = () => {
           const { access_token } = res.data.session;
           console.log("res", res);
 
-          void HttpClient.axios
+          return HttpClient.axios
             .post<{ token: string; status: boolean }>({
               url: "/api/auth/callback",
               data: {
@@ -61,6 +61,7 @@ export const useAuth = () => {
               console.log("aa", aa);
 
               location.reload();
+              window.location.href = "/";
             });
         });
       }

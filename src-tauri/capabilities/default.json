@@ -16,6 +16,7 @@
     "shellx:allow-spawn",
     "shellx:allow-open",
     "oauth:allow-start",
+    "oauth:allow-cancel",
     {
       "identifier": "http:default",
       "allow": [

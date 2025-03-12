@@ -35,7 +35,11 @@
           "key2": "'value3'"
         }
       },
-      "csp": "default-src 'self'; connect-src ipc: http://ipc.localhost"
+      "csp": {
+        "default-src": "'self'",
+        "connect-src": "ipc: http://ipc.localhost http://tauri.localhost https://*.supabase.co https://*.luqueee.dev wss://*.luqueee.dev",
+        "img-src": "'self' https://cdn.discordapp.com https://lh3.googleusercontent.com"
+      }
     }
   },
 

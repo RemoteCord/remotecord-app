@@ -3,12 +3,11 @@
 import { createContext, useContext, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 
-import { useStoreTauri } from "@/hooks/shared/useStore";
+import { useStoreTauri } from "@/hooks/useStore";
 import { WsService } from "@/services/client";
-import { useSupabaseContextProvider } from "./SupabaseContext";
 import { useLogContextProvider } from "./LogContext";
-import { download } from "@tauri-apps/plugin-upload";
-import { useToast } from "@/hooks/shared/use-toast";
+import { useWsClient } from "@/hooks/useWsClient";
+import { env } from "@/env.config";
 
 export type Events =
   | "uploadFile"
@@ -35,20 +34,11 @@ const WsContext = createContext<
 const WsContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
+  const { setWsService, file, downloading, UploadFile, AppendLog } =
+    useWsClient();
   const [wss, setWss] = useState<Socket | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
-  const { appendLog } = useLogContextProvider();
   const { getRecord } = useStoreTauri();
-  const [downloading, setDownloading] = useState<boolean>(false);
-  const [file, setFile] = useState<{
-    progress: number;
-    total: number;
-    filename: string;
-  }>({
-    progress: 0,
-    total: 0,
-    filename: "",
-  });
 
   const connect = async (tokenController: string, username: string) => {
     if (!tokenController) {
@@ -62,7 +52,7 @@ const WsContextProvider: React.FC<{
     console.log("authtoken", token);
 
     console.log("Connecting to ws-client", tokenController, token);
-    const socket = io("wss://api2.luqueee.dev/clients", {
+    const socket = io(`${env.NEXT_PUBLIC_WS_URL}/clients`, {
       query: {
         tokenController,
       },
@@ -72,10 +62,12 @@ const WsContextProvider: React.FC<{
     });
 
     const wsService = new WsService(socket);
+    setWsService(wsService);
 
     socket.on("connect", () => {
       console.log("Connected");
       setWss(socket);
+      setConnected(true);
     });
 
     socket.on("disconnect", () => {
@@ -89,33 +81,9 @@ const WsContextProvider: React.FC<{
 
     socket.on("getScreensFromClient", wsService.getScreensFromClient);
 
-    socket.on("uploadFile", (data: WS.UploadFile) => {
-      const { fileroute } = data;
-      console.log("uploadFile", data);
-      let progressDownload = 0;
-      const filename = fileroute
-        .split("/")
-        .filter((route) => route.includes("?"))[0]
-        .split("?")[0];
-      const downloadPath = `C:/Users/luque/Desktop/${filename}`;
+    socket.on("getScreenshot", wsService.getScreenshot);
 
-      download(fileroute, downloadPath, ({ progress, total }) => {
-        if (progressDownload === 0) setDownloading(true);
-        progressDownload += progress;
-        console.log(
-          `Downloaded ${progress} ${progressDownload} of ${total} bytes`
-        );
-        setFile({
-          progress: progressDownload,
-          total,
-          filename,
-        });
-
-        if (progressDownload === total) {
-          setDownloading(false);
-        }
-      });
-    });
+    socket.on("uploadFile", UploadFile);
 
     socket.on("getFilesFolder", wsService.getFilesFolder);
 
@@ -125,14 +93,9 @@ const WsContextProvider: React.FC<{
 
     socket.on("runCmdCommand", wsService.runCmdCommand);
 
-    socket.onAny((eventName: Events, ...args) => {
-      console.log("onAny", eventName, args);
-      appendLog({
-        type: eventName,
-        controller: username,
-        context: "",
-      });
-    });
+    socket.onAny((eventName: Events, ...args) =>
+      AppendLog(eventName, username, ...args)
+    );
   };
 
   return (

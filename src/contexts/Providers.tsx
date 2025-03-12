@@ -7,14 +7,12 @@ import { DownloadingFile } from "./DownloadingFile";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
-    <SupabaseContextProvider>
-      <LogContextProvider>
-        <WsContextProvider>
-          <WsApplication />
-          <DownloadingFile />
-          <KeyContextProvider>{children}</KeyContextProvider>
-        </WsContextProvider>
-      </LogContextProvider>
-    </SupabaseContextProvider>
+    <LogContextProvider>
+      <WsContextProvider>
+        <WsApplication />
+        <DownloadingFile />
+        <KeyContextProvider>{children}</KeyContextProvider>
+      </WsContextProvider>
+    </LogContextProvider>
   );
 };

@@ -1,18 +1,14 @@
 "use client";
 
-import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { onOpenUrl } from "@tauri-apps/plugin-deep-link";
 
-import { cookies } from "next/headers";
 import { Toaster } from "@/components/ui/toaster";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
 import { useEffect } from "react";
 import SupabaseContextProvider from "@/contexts/SupabaseContext";
-import { Providers } from "@/contexts/Providers";
-import { NavBar } from "@/components/Navbar";
+import { usePathname } from "next/navigation";
+import { useStoreTauri } from "@/hooks/useStore";
+import { useDeviceDetection } from "@/hooks/use-useragent";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,27 +26,38 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { getRecord } = useStoreTauri();
+  const device = useDeviceDetection();
+  const pathname = usePathname();
+
+  // useEffect(() => {
+  //   () => async () => {
+  //     await onOpenUrl((urls) => {
+  //       console.log("deep link:", urls);
+  //     });
+  //   };
+  // }, []);
+
   useEffect(() => {
-    () => async () => {
-      await onOpenUrl((urls) => {
-        console.log("deep link:", urls);
-      });
-    };
-  }, []);
+    void getRecord("auth").then((auth) => {
+      if (!auth && pathname !== "/auth") {
+        console.log("no auth token");
+
+        window.location.href = "/auth";
+      }
+    });
+  }, [pathname]);
   return (
     <html lang="en" className="dark">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen w-screen m-0 p-0  box-border overflow-x-hidden `}
       >
-        <Providers>
-          <main className="w-screen h-screen grid grid-rows-[auto_1fr]">
-            <NavBar />
-            {/* <AppSidebar /> */}
-            {/* <SidebarTrigger /> */}
-            <div className="overflow-y-auto max-h-screen p-4">{children}</div>
-          </main>
+        <SupabaseContextProvider>
           <Toaster />
-        </Providers>
+          <main className="w-screen h-screen grid grid-rows-[auto_1fr]">
+            <div>{children}</div>
+          </main>
+        </SupabaseContextProvider>
       </body>
     </html>
   );

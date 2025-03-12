@@ -2,8 +2,7 @@
 
 import HttpClient from "@/client/HttpClient";
 import { useWsContextProvider } from "@/contexts/WsContext";
-import { useApi } from "@/hooks/shared/useApi";
-import { useStoreTauri } from "@/hooks/shared/useStore";
+import { useApi } from "@/hooks/useApi";
 import { OsService } from "@/services/client/OsService";
 
 export function TestRequest() {
@@ -13,7 +12,7 @@ export function TestRequest() {
     // const response = await fetch("https://api.luqueee.dev/");
     // const data = await response.json();
     // console.log(data);
-    const res = await request("/protected", {
+    const res = await request("/api/health", {
       method: "GET",
     });
     console.log("res", res);
@@ -29,9 +28,6 @@ export function TestRequest() {
     <div className="border p-4 flex gap-4 w-fit rounded-lg my-4">
       <button type="button" onClick={req}>
         Test Request
-      </button>
-      <button type="button" onClick={connect}>
-        Test Wss
       </button>
 
       <button type="button" onClick={sendMessage}>

@@ -39,6 +39,21 @@ export class WsService {
     }
   };
 
+  getScreenshot = async (data: WS.GetScreenshot) => {
+    const { screenid } = data;
+    console.log("getScreenshot", data);
+
+    invoke("capture", { id: parseInt(screenid) }).then((image) => {
+      const [base64, buffer] = image as [string, string];
+
+      console.log(image);
+
+      this.socket.emit("getScreenshotFromClient", {
+        buffer,
+      });
+    });
+  };
+
   getScreensFromClient = async () => {
     const screens = await OsService.getScreens();
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { UseNotification } from "@/hooks/shared/useNotification";
+import { UseNotification } from "@/hooks/useNotification";
 
 export function SendNotificationButton() {
   const { sendNotification } = UseNotification();

@@ -3,32 +3,35 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 
-import { useStoreTauri } from "@/hooks/shared/useStore";
+import { useStoreTauri } from "@/hooks/useStore";
 import { useWsContextProvider } from "./WsContext";
 import { wsManager } from "@/client/WsClient";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { ConnectionModal } from "@/components/modals/ConnectionModal";
+import { FriendModal } from "@/components/modals/AddFriendModal";
 
 export const WsApplication: React.FC<{}> = () => {
   const [wssApplication, setWssApplication] = useState<Socket | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
+  const { toast } = useToast();
+
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openModalFriend, setOpenModalFriend] = useState<boolean>(false);
+
   const [controllerData, setControllerData] = useState<{
     username: string;
     avatar: string;
+    token: string;
   }>({
     username: "",
     avatar: "",
+    token: "",
   });
+
+  const [controllerid, setControllerid] = useState<string | null>(null);
+
   const [tokenConnection, setTokenConnection] = useState<string | null>(null);
 
   const { getRecord } = useStoreTauri();
@@ -39,9 +42,12 @@ export const WsApplication: React.FC<{}> = () => {
     const connectWsApplication = async () => {
       console.log("Connecting to ws application");
 
-      const { token } = (await getRecord("auth")) as {
+      const auth = (await getRecord("auth")) as {
         token: string;
       };
+      if (!auth) return;
+      const { token } = auth;
+
       console.log("authtoken", token);
 
       const socket = wsManager.socket(`/application`, {
@@ -53,6 +59,10 @@ export const WsApplication: React.FC<{}> = () => {
       socket.on("connect", () => {
         console.log("Connected to ws application");
         setWssApplication(socket);
+        toast({
+          title: "Connected to application",
+          description: "You are now connected to the application",
+        });
       });
 
       socket.on("disconnect", () => {
@@ -64,19 +74,43 @@ export const WsApplication: React.FC<{}> = () => {
         console.log("Error", error);
       });
 
+      socket.on(
+        "addFriend",
+        (data: {
+          clientid: string;
+          username: string;
+          avatar: string;
+          controllerid: string;
+          token: string;
+        }) => {
+          const { clientid, username, avatar, controllerid, token } = data;
+          console.log("addFriend", data);
+          setControllerid(controllerid);
+          setControllerData({
+            username,
+            avatar,
+            token,
+          });
+          setOpenModalFriend(true);
+        }
+      );
+
       socket.removeAllListeners("emitConnectToController");
       socket.on(
         "emitConnectToController",
         (data: {
-          token: string;
           controller: {
             username: string;
             avatar: string;
           };
+          token: string;
         }) => {
           const { token, controller } = data;
           console.log("emitConnectToController", data);
-          setControllerData(controller);
+          setControllerData({
+            ...controller,
+            token,
+          });
           setOpenModal(true);
           setTokenConnection(token);
           // if (token) {
@@ -97,40 +131,49 @@ export const WsApplication: React.FC<{}> = () => {
     if (tokenConnection) {
       connect(tokenConnection, controllerData.username);
       setOpenModal(false);
+      setControllerData({
+        username: "",
+        avatar: "",
+        token: "",
+      });
     } else {
+      setOpenModal(false);
+
       console.error(
         "No controllerid token provided in emitConnectToController"
       );
     }
   };
 
-  return (
-    <Dialog open={openModal}>
-      <DialogContent>
-        <DialogHeader className="flex flex-col gap-4">
-          <DialogTitle className="flex gap-4 items-center">
-            <span>
-              {controllerData?.avatar && (
-                <Image
-                  src={controllerData?.avatar}
-                  alt="avatar"
-                  width={50}
-                  height={50}
-                  className="rounded-full"
-                />
-              )}
-            </span>
-            {controllerData?.username} wants to connect
-          </DialogTitle>
-          <DialogDescription className="flex gap-8">
-            <Button onClick={handleAcceptConnection}>Accept</Button>
+  const handleAcceptFriend = () => {
+    // connect(tokenConnection, controllerData.username);
+    setOpenModalFriend(false);
+    setControllerData({
+      username: "",
+      avatar: "",
+      token: "",
+    });
+    wssApplication?.emit("addFriend", {
+      controllerid: controllerid,
+      token: controllerData.token,
+    });
+  };
 
-            <Button variant={"destructive"} onClick={() => setOpenModal(false)}>
-              Cancel
-            </Button>
-          </DialogDescription>
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
+  return (
+    <>
+      <FriendModal
+        openModal={openModalFriend}
+        controllerData={controllerData}
+        handleAcceptFriend={handleAcceptFriend}
+        setOpenModal={setOpenModalFriend}
+      />
+
+      <ConnectionModal
+        openModal={openModal}
+        controllerData={controllerData}
+        handleAcceptConnection={handleAcceptConnection}
+        setOpenModal={setOpenModal}
+      />
+    </>
   );
 };

@@ -1,4 +1,7 @@
 namespace WS {
+  export interface GetScreenshot {
+    screenid: string;
+  }
   export interface GetFilesFolder {
     folder: Folders;
     relativepath: string;

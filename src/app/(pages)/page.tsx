@@ -1,6 +1,6 @@
 "use client";
 import { TestComponents } from "@/components/TestComponents";
-import { useStoreTauri } from "@/hooks/shared/useStore";
+import { useStoreTauri } from "@/hooks/useStore";
 import Link from "next/link";
 export default function Home() {
   const { cleanStore } = useStoreTauri();

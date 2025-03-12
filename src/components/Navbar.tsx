@@ -4,6 +4,7 @@ import { useStoreTauri } from "@/hooks/shared/useStore";
 import { Home, Scroll } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { ConfigMenu } from "./config/ConfigMenu";
 const items = [
   {
     title: "Home",
@@ -30,6 +31,7 @@ export const NavBar: React.FC = () => {
             {item.title}
           </Link>
         ))}
+        <ConfigMenu />
         <Image
           src={session?.user.user_metadata.picture}
           alt="avatar"
