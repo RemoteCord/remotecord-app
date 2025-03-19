@@ -3,21 +3,29 @@
 
 use rdev::{listen, simulate, EventType, SimulateError};
 use serde::{Deserialize, Serialize};
-use tauri_plugin_http::reqwest;
+
+use std::io::Read;
 use std::sync::{Arc, Mutex};
 use std::{thread, time::Duration};
 use tauri::State;
+use tauri_plugin_http::reqwest;
 
 use keystroke::start_keystroke_listener;
 use std::sync::atomic::{AtomicBool, Ordering};
 // use tauri::{Manager};
 use log::error;
+mod errors;
 
 mod keystroke;
 // mod tray;
 
 pub mod macros;
 pub mod screenshot;
+
+use tauri_plugin_log::{Target, TargetKind};
+
+use std::fs;
+use std::path::Path;
 #[derive(Default)]
 struct MacroState {
     events: Arc<Mutex<Vec<MacroEvent>>>,
@@ -29,9 +37,8 @@ fn main() {
     #[cfg(debug_assertions)] // only enable instrumentation in development builds
     let devtools = tauri_plugin_devtools::init();
 
-
     let context = std::thread::Builder::new()
-        .stack_size(100 * 1024 * 1024)  // 100 MiB in bytes
+        .stack_size(100 * 1024 * 1024) // 100 MiB in bytes
         .spawn(|| tauri::generate_context!())
         .expect("Failed to spawn context thread")
         .join()
@@ -42,6 +49,11 @@ fn main() {
     }));
 
     let mut tauri_app = tauri::Builder::default()
+//         .plugin(tauri_plugin_log::Builder::new().target(tauri_plugin_log::Target::new(
+//     tauri_plugin_log::TargetKind::Stdout,
+//   )).build())
+
+        .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_upload::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_http::init())
@@ -61,6 +73,9 @@ fn main() {
             // let setting_window = app.get_webview_window("settings").unwrap();
             // setting_window.hide().unwrap();
             start_keystroke_listener(app);
+
+            // let window = app.get_webview_window("main").unwrap();
+
             // setup_recording_handler(app);
 
             Ok(())
@@ -78,13 +93,16 @@ fn main() {
             start_recording,
             stop_recording,
             play_macro,
-            handle_file_upload,
+            open_file,
             screenshot::capture,
             screenshot::get_screens
         ])
-        .plugin(tauri_plugin_websocket::init())
-        // .plugin(tauri_plugin_shell::init())
-        //   .plugin(tauri_plugin_prevent_default::init())
+   
+        // .plugin(tauri_plugin_log::Builder::new().targets([
+        //     Target::new(TargetKind::Stdout),
+        //     Target::new(TargetKind::LogDir { file_name: None }),
+        //     Target::new(TargetKind::Webview),
+        // ]).build())
         .plugin(tauri_plugin_fs_pro::init())
         .plugin(tauri_plugin_system_info::init())
         .plugin(tauri_plugin_oauth::init())
@@ -94,41 +112,68 @@ fn main() {
         .plugin(tauri_plugin_notification::init())
         .run(context)
         // .run(tauri::generate_context!())
-
         .expect("error while running tauri application");
 }
 
 #[tauri::command]
-async fn handle_file_upload(
-    buffer: Vec<u8>,
-    filename: String,
-    token: String,
-    tokenfile: String,
-    apiurl: String,
-) -> Result<(), String> {
+async fn open_file(path: String, token: String, apiurl: String) -> Result<String, String> {
+    let filename = Path::new(&path)
+        .file_name()
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string();
+    let file = fs::File::open(&path).map_err(|e| e.to_string())?;
+    let metadata = file.metadata().map_err(|e| e.to_string())?;
+    let total_size = metadata.len();
+    let mut reader = std::io::BufReader::new(file);
+    let mut data = Vec::with_capacity(total_size as usize);
+    let mut buffer = [0; 8192];
+    let mut read_so_far = 0;
+
+    loop {
+        let n = reader.read(&mut buffer).map_err(|e| e.to_string())?;
+        if n == 0 {
+            break;
+        }
+        data.extend_from_slice(&buffer[..n]);
+        read_so_far += n;
+        println!(
+            "Progress: {}%",
+            (read_so_far as f64 / total_size as f64 * 100.0) as u32
+        );
+    }
+    // let metadata: fs::Metadata = fs::metadata(path)?;
+
     let client = reqwest::Client::new();
     let form = reqwest::multipart::Form::new()
-        .part("file", reqwest::multipart::Part::bytes(buffer)
-            .file_name(filename)
-            .mime_str("application/octet-stream")
-            .map_err(|e| e.to_string())?)
-        .text("tokenFile", tokenfile);
+        .part(
+            "file",
+            reqwest::multipart::Part::bytes(data)
+                .file_name(filename.clone())
+                .mime_str("application/octet-stream")
+                .map_err(|e| e.to_string())?,
+        )
+        .text("fileName", filename);
 
     let response = client
-        .post(format!("{}/api/clients/file/upload", apiurl))
+        //.post("http://4.233.151.95/api/upload")
+        //.post("https://api.luqueee.dev/api/upload")
+        .post(apiurl)
         .header("Authorization", format!("Bearer {}", token))
         .multipart(form)
         .send()
         .await
         .map_err(|e| e.to_string())?;
 
+    println!("Response: {:?}", response);
+
     if response.status().is_success() {
-        Ok(())
+        return response.text().await.map_err(|e| e.to_string());
     } else {
         Err(format!("Upload failed with status: {}", response.status()))
     }
 }
-
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 struct SerializableEventType {

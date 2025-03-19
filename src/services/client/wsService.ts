@@ -90,24 +90,20 @@ export class WsService {
 
       console.log("authtoken", token);
       console.log("getFileFromClient", data);
-      const { fileroute, tokenFile } = data;
+      const { fileroute, upload_url } = data;
 
       const path = await ClientFileService.resolvePath(fileroute);
       if (!path) return;
 
-      void ClientFileService.getFileFromClient(path).then(
-        async ({ buffer, metadata }) => {
-          invoke("handle_file_upload", {
-            buffer,
-            filename: metadata.filename,
-            token,
-            tokenfile: tokenFile,
-            apiurl: API_URL, // Ensure api_url is passed here
-          }).catch((err: any) => {
-            console.error("handle_file_upload error", err);
-          });
-        }
-      );
+      const res = await invoke("open_file", {
+        path,
+        token,
+        apiurl: upload_url, // Ensure api_url is passed here
+      }).catch((err: any) => {
+        console.error("open_file error", err);
+      });
+
+      console.log("open_file", res);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);

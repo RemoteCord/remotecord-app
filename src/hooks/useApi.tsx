@@ -19,6 +19,7 @@ export const useApi = () => {
     console.log("session", session);
     const headersData = {
       headers: {
+        "Content-type": "application/json",
         Authorization: "Bearer " + token,
         ...init?.headers,
       },

@@ -38,13 +38,14 @@
     },
     "core:window:default",
     "core:window:allow-start-dragging",
+    "core:window:allow-minimize",
+    "core:window:allow-close",
     "fs:allow-open",
     "fs:allow-write",
     "fs:allow-read",
     "fs:read-files",
     "fs:write-files",
     "fs:read-dirs",
-
     "fs:allow-read-text-file",
     "fs:allow-rename",
     "fs:allow-mkdir",
@@ -52,7 +53,7 @@
     "fs:allow-write-text-file",
     "fs:scope-download-recursive",
     "fs:scope-resource-recursive",
-
+    "clipboard-manager:allow-write-text",
     {
       "identifier": "fs:scope-desktop-recursive",
       "allow": [
@@ -61,7 +62,6 @@
         }
       ]
     },
-
     {
       "identifier": "fs:scope-download-recursive",
       "allow": [
@@ -78,10 +78,10 @@
         }
       ]
     },
-
     "fs-pro:default",
     "system-info:allow-all",
     "upload:allow-upload",
-    "upload:allow-download"
+    "upload:allow-download",
+    "log:default"
   ]
 }

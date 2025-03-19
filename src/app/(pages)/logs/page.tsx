@@ -8,7 +8,6 @@ export default function LogsPage() {
 
   return (
     <div className=" pr-4">
-      <h1>Logs</h1>
       <DataTable columns={columns} data={logs} />
     </div>
   );

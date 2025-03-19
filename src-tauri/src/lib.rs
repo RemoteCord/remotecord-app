@@ -1,4 +1,5 @@
-use tauri_plugin_deep_link::DeepLinkExt;
+
+use tauri_plugin_log::{Target, TargetKind};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -18,13 +19,12 @@ pub fn run() {
             // #[cfg(desktop)]
             // app.deep_link().register("my-app")?;
 
-            if cfg!(debug_assertions) {
-                app.handle().plugin(
-                    tauri_plugin_log::Builder::default()
-                        .level(log::LevelFilter::Info)
-                        .build(),
-                )?;
-            }
+                app.handle().plugin(tauri_plugin_log::Builder::new().targets([
+            Target::new(TargetKind::Stdout),
+            Target::new(TargetKind::LogDir { file_name: None }),
+            Target::new(TargetKind::Webview),
+        ]).build())?;
+    
 
             //   #[cfg(desktop)]
             // app.deep_link().register("my-app")?;

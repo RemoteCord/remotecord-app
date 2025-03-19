@@ -30,13 +30,23 @@ export const WsApplication: React.FC<{}> = () => {
     token: "",
   });
 
+  const [controllerConnection, setControllerConnection] = useState<{
+    username: string;
+    avatar: string;
+    controllerid: string;
+  }>({
+    username: "",
+    avatar: "",
+    controllerid: "",
+  });
   const [controllerid, setControllerid] = useState<string | null>(null);
 
   const [tokenConnection, setTokenConnection] = useState<string | null>(null);
+  const [tokenController, setTokenController] = useState<string | null>(null);
 
   const { getRecord } = useStoreTauri();
 
-  const { connect } = useWsContextProvider();
+  const { connect, disconnect } = useWsContextProvider();
 
   useEffect(() => {
     const connectWsApplication = async () => {
@@ -103,16 +113,18 @@ export const WsApplication: React.FC<{}> = () => {
             username: string;
             avatar: string;
           };
-          token: string;
+          controllerid: string;
+          tokenConnection: string;
         }) => {
-          const { token, controller } = data;
+          const { controllerid, controller, tokenConnection } = data;
           console.log("emitConnectToController", data);
-          setControllerData({
+          setControllerConnection({
             ...controller,
-            token,
+            controllerid,
           });
           setOpenModal(true);
-          setTokenConnection(token);
+          setTokenConnection(tokenConnection);
+          setTokenController(token);
           // if (token) {
           //   connect(token);
           // } else {
@@ -128,8 +140,12 @@ export const WsApplication: React.FC<{}> = () => {
   }, []);
 
   const handleAcceptConnection = () => {
-    if (tokenConnection) {
-      connect(tokenConnection, controllerData.username);
+    if (tokenConnection && controllerConnection) {
+      connect(
+        controllerConnection.controllerid,
+        tokenConnection,
+        controllerData.username
+      );
       setOpenModal(false);
       setControllerData({
         username: "",
@@ -148,14 +164,16 @@ export const WsApplication: React.FC<{}> = () => {
   const handleAcceptFriend = () => {
     // connect(tokenConnection, controllerData.username);
     setOpenModalFriend(false);
+
+    wssApplication?.emit("addFriend", {
+      controllerid: controllerid,
+      token: controllerData.token,
+    });
+
     setControllerData({
       username: "",
       avatar: "",
       token: "",
-    });
-    wssApplication?.emit("addFriend", {
-      controllerid: controllerid,
-      token: controllerData.token,
     });
   };
 
@@ -170,7 +188,7 @@ export const WsApplication: React.FC<{}> = () => {
 
       <ConnectionModal
         openModal={openModal}
-        controllerData={controllerData}
+        controllerData={controllerConnection}
         handleAcceptConnection={handleAcceptConnection}
         setOpenModal={setOpenModal}
       />

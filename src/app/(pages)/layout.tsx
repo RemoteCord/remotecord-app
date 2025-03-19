@@ -1,11 +1,8 @@
 "use client";
-import { NavBar } from "@/components/Navbar";
+import { NavBar } from "@/components/navbar/Navbar";
 import { Providers } from "@/contexts/Providers";
-import { useSupabaseContextProvider } from "@/contexts/SupabaseContext";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const {} = useSupabaseContextProvider();
-
   return (
     <Providers>
       <NavBar />

@@ -48,14 +48,14 @@ export default function RootLayout({
     });
   }, [pathname]);
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark h-screen w-screen">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen w-screen m-0 p-0  box-border overflow-x-hidden `}
       >
         <SupabaseContextProvider>
           <Toaster />
           <main className="w-screen h-screen grid grid-rows-[auto_1fr]">
-            <div>{children}</div>
+            {children}
           </main>
         </SupabaseContextProvider>
       </body>

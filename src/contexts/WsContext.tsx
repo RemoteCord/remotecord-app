@@ -26,7 +26,12 @@ const WsContext = createContext<
         filename: string;
       };
       downloading: boolean;
-      connect: (controllerid: string, username: string) => Promise<void>;
+      connect: (
+        controllerid: string,
+        tokenConnection: string,
+        username: string
+      ) => Promise<void>;
+      disconnect: () => void;
     }
   | undefined
 >(undefined);
@@ -40,9 +45,25 @@ const WsContextProvider: React.FC<{
   const [connected, setConnected] = useState<boolean>(false);
   const { getRecord } = useStoreTauri();
 
-  const connect = async (tokenController: string, username: string) => {
-    if (!tokenController) {
-      console.error("No controllerid token provided to connect function");
+  const disconnect = () => {
+    console.log("Disconnecting from ws-client", wss);
+    if (wss) {
+      console.log("Disconnecting from ws-client", wss);
+      wss.disconnect();
+      setWss(null);
+      setConnected(false);
+    } else {
+      console.log("No WebSocket connection to disconnect");
+    }
+  };
+
+  const connect = async (
+    controllerid: string,
+    tokenConnection: string,
+    username: string
+  ) => {
+    if (!controllerid) {
+      console.error("No controllerid id provided to connect function");
       return;
     }
 
@@ -51,22 +72,24 @@ const WsContextProvider: React.FC<{
     };
     console.log("authtoken", token);
 
-    console.log("Connecting to ws-client", tokenController, token);
+    console.log("Connecting to ws-client", controllerid, token);
     const socket = io(`${env.NEXT_PUBLIC_WS_URL}/clients`, {
       query: {
-        tokenController,
+        controllerid,
       },
       auth: {
         token,
+        tokenConnection,
       },
     });
+
+    setWss(socket);
 
     const wsService = new WsService(socket);
     setWsService(wsService);
 
     socket.on("connect", () => {
       console.log("Connected");
-      setWss(socket);
       setConnected(true);
     });
 
@@ -74,6 +97,14 @@ const WsContextProvider: React.FC<{
       console.log("Disconnected");
       setWss(null);
     });
+
+    socket.on(
+      "emitDisconnectFromController",
+      (data: { controllerid: string }) => {
+        console.log("emitDisconnectFromController", data);
+        socket.disconnect();
+      }
+    );
 
     socket.on("error", (error) => {
       console.log("Error", error);
@@ -99,7 +130,9 @@ const WsContextProvider: React.FC<{
   };
 
   return (
-    <WsContext.Provider value={{ wss, connect, file, connected, downloading }}>
+    <WsContext.Provider
+      value={{ wss, connect, disconnect, file, connected, downloading }}
+    >
       {children}
     </WsContext.Provider>
   );

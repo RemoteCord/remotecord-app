@@ -9,7 +9,7 @@ namespace WS {
 
   export interface GetFileFromClient {
     fileroute: string;
-    tokenFile: string;
+    upload_url: string;
   }
 
   export interface UploadFile {

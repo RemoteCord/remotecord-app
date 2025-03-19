@@ -1,11 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-import { io, type Socket } from "socket.io-client";
+import { useState } from "react";
 
-import { useStoreTauri } from "@/hooks/shared/useStore";
 import { useWsContextProvider } from "./WsContext";
-import { wsManager } from "@/client/WsClient";
 
 import {
   Dialog,
