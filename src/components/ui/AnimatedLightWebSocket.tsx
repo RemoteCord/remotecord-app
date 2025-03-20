@@ -12,7 +12,7 @@ export default function AnimatedLightWebSocket() {
   }, [connected]);
 
   return (
-    <div className="relative h-40">
+    <div className="relative">
       <motion.div
         className={
           " w-6 h-6 rounded-full m-10 absolute transition-colors duration-500"

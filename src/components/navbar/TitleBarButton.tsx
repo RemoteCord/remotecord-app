@@ -1,5 +1,6 @@
 export const TitleBarButton: React.FC<{
   children: React.ReactNode;
+
   toggle: () => void;
 }> = ({ children, toggle }) => {
   return (

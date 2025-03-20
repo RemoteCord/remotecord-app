@@ -11,7 +11,6 @@ import { SendRequest } from "./test-components/sendRequest";
 export const TestComponents = () => {
   return (
     <div className="h-full">
-      <AnimatedLightWebSocket />
       <Macros />
       <Screenshot />
       <SendNotificationButton />
