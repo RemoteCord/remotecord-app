@@ -26,13 +26,12 @@ export const CodeClient = () => {
 
   return (
     <TooltipProvider>
-      <Tooltip delayDuration={0}>
-        <TooltipTrigger asChild>
-          <div className="flex items-center justify-center h-fit gap-4 my-8 bg-secondary w-fit mx-auto rounded-lg overflow-hidden">
+      <Tooltip>
+        <TooltipTrigger>
+          <div className="flex items-center justify-center h-fit gap-4 bg-secondary w-fit mx-auto rounded-lg overflow-hidden">
             <p className="pl-4  ">
               {session ? <span>{session?.user.id}</span> : <span>aaa</span>}
             </p>
-
             <button
               className="hover:bg-zinc-800 p-3 m-2 rounded-lg"
               onClick={handleCopy}
