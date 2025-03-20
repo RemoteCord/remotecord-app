@@ -9,17 +9,9 @@ import SupabaseContextProvider from "@/contexts/SupabaseContext";
 import { usePathname } from "next/navigation";
 import { useStoreTauri } from "@/hooks/useStore";
 import { useDeviceDetection } from "@/hooks/use-useragent";
+import { Inter } from "next/font/google";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+const font = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
@@ -50,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark h-screen w-screen">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen w-screen m-0 p-0  box-border overflow-x-hidden `}
+        className={`${font.className} anti  aliased h-screen w-screen m-0 p-0  box-border overflow-x-hidden `}
       >
         <SupabaseContextProvider>
           <Toaster />

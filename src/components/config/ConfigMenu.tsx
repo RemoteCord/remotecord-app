@@ -33,7 +33,7 @@ export const ConfigMenu = () => {
           <div>
             <Input
               value={username}
-              onBlur={(e) => handleChangeUsername(e.target.value)}
+              // onBlur={(e) => handleChangeUsername(e.target.value)}
               onChange={(e) => setUsername(e.target.value)}
             />
           </div>
