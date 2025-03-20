@@ -21,7 +21,7 @@ export const CodeClient = () => {
   return (
     <div className="flex items-center justify-center h-fit gap-4 bg-secondary w-fit mx-auto rounded-lg overflow-hidden">
       <p className="pl-4  ">
-        {session ? <span>{session?.user.id}</span> : <span>aaa</span>}
+        {session ? <span>{session?.user.id}</span> : <span>Loading...</span>}
       </p>
 
       <button
