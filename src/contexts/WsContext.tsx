@@ -8,6 +8,7 @@ import { WsService } from "@/services/client";
 import { useLogContextProvider } from "./LogContext";
 import { useWsClient } from "@/hooks/useWsClient";
 import { env } from "@/env.config";
+import { useSupabaseContextProvider } from "./SupabaseContext";
 
 export type Events =
   | "uploadFile"
@@ -41,10 +42,12 @@ const WsContextProvider: React.FC<{
 }> = ({ children }) => {
   const { setWsService, file, downloading, UploadFile, AppendLog } =
     useWsClient();
+  const { session } = useSupabaseContextProvider();
+
   const [wss, setWss] = useState<Socket | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
   const { getRecord } = useStoreTauri();
-
+  // const [username, setUsername] = useState<string>("");
   const disconnect = () => {
     console.log("Disconnecting from ws-client", wss);
     if (wss) {
@@ -96,6 +99,7 @@ const WsContextProvider: React.FC<{
     socket.on("disconnect", () => {
       console.log("Disconnected");
       setWss(null);
+      setConnected(false);
     });
 
     socket.on(

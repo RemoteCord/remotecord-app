@@ -14,7 +14,7 @@ export default function Home() {
       </button>
       <Link href="/auth">Auth</Link>
 
-      <TestComponents />
+      {/* <TestComponents /> */}
     </div>
   );
 }

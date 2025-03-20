@@ -25,7 +25,7 @@ export const ConnectionModalAnimation = () => {
   }, [connected]);
   return (
     <Dialog open={connected}>
-      <DialogTrigger>Open</DialogTrigger>
+      {/* <DialogTrigger>Open</DialogTrigger> */}
       <DialogContent className="w-screen h-screen bg-zinc-900 ">
         <div
           data-tauri-drag-region
@@ -42,8 +42,8 @@ export const ConnectionModalAnimation = () => {
             <div className="flex gap-4 items-center">
               <Image
                 src={controllerConnection.avatar}
-                width={50}
-                height={50}
+                width={40}
+                height={40}
                 alt="avatar connection"
                 className="rounded-full"
               />

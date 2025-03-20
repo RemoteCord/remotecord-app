@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ConnectionModal } from "@/components/modals/ConnectionModal";
 import { FriendModal } from "@/components/modals/AddFriendModal";
+import { useSupabaseContextProvider } from "./SupabaseContext";
 
 interface ControllerConnectionType {
   username: string;
@@ -29,6 +30,7 @@ export const WsApplicationProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [wssApplication, setWssApplication] = useState<Socket | null>(null);
+  const { session } = useSupabaseContextProvider();
   const [connected, setConnected] = useState<boolean>(false);
   const { toast } = useToast();
 
@@ -61,9 +63,9 @@ export const WsApplicationProvider: React.FC<{
   const { connect, disconnect } = useWsContextProvider();
 
   useEffect(() => {
+    console.log("session", session);
     const connectWsApplication = async () => {
       console.log("Connecting to ws application");
-
       const auth = (await getRecord("auth")) as {
         token: string;
       };
@@ -148,15 +150,15 @@ export const WsApplicationProvider: React.FC<{
       );
     };
 
-    connectWsApplication();
-  }, []);
+    if (session) connectWsApplication();
+  }, [session]);
 
   const handleAcceptConnection = () => {
     if (tokenConnection && controllerConnection) {
       connect(
         controllerConnection.controllerid,
         tokenConnection,
-        controllerData.username
+        controllerConnection.username
       );
       setOpenModal(false);
       setControllerData({

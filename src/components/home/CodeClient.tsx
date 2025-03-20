@@ -3,6 +3,12 @@ import { useSupabaseContextProvider } from "@/contexts/SupabaseContext";
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 // import { info } from "@tauri-apps/plugin-log";
 export const CodeClient = () => {
   const { session } = useSupabaseContextProvider();
@@ -19,17 +25,28 @@ export const CodeClient = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-fit gap-4 bg-secondary w-fit mx-auto rounded-lg overflow-hidden">
-      <p className="pl-4  ">
-        {session ? <span>{session?.user.id}</span> : <span>aaa</span>}
-      </p>
+    <TooltipProvider>
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <div className="flex items-center justify-center h-fit gap-4 my-8 bg-secondary w-fit mx-auto rounded-lg overflow-hidden">
+            <p className="pl-4  ">
+              {session ? <span>{session?.user.id}</span> : <span>aaa</span>}
+            </p>
 
-      <button
-        className="hover:bg-zinc-800 p-3 m-2 rounded-lg"
-        onClick={handleCopy}
-      >
-        {copy ? <Check size={15} /> : <Copy size={15} />}
-      </button>
-    </div>
+            <button
+              className="hover:bg-zinc-800 p-3 m-2 rounded-lg"
+              onClick={handleCopy}
+            >
+              {copy ? <Check size={15} /> : <Copy size={15} />}
+            </button>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="text-white font-[600]">
+            Your ID for adding a controller
+          </p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
