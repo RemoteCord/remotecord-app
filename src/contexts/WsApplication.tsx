@@ -12,7 +12,22 @@ import { useToast } from "@/hooks/use-toast";
 import { ConnectionModal } from "@/components/modals/ConnectionModal";
 import { FriendModal } from "@/components/modals/AddFriendModal";
 
-export const WsApplication: React.FC<{}> = () => {
+interface ControllerConnectionType {
+  username: string;
+  avatar: string;
+  controllerid: string;
+}
+
+const WsApplicationContext = createContext<
+  | {
+      controllerConnection: ControllerConnectionType;
+    }
+  | undefined
+>(undefined);
+
+export const WsApplicationProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
   const [wssApplication, setWssApplication] = useState<Socket | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
   const { toast } = useToast();
@@ -30,15 +45,12 @@ export const WsApplication: React.FC<{}> = () => {
     token: "",
   });
 
-  const [controllerConnection, setControllerConnection] = useState<{
-    username: string;
-    avatar: string;
-    controllerid: string;
-  }>({
-    username: "",
-    avatar: "",
-    controllerid: "",
-  });
+  const [controllerConnection, setControllerConnection] =
+    useState<ControllerConnectionType>({
+      username: "",
+      avatar: "",
+      controllerid: "",
+    });
   const [controllerid, setControllerid] = useState<string | null>(null);
 
   const [tokenConnection, setTokenConnection] = useState<string | null>(null);
@@ -178,7 +190,7 @@ export const WsApplication: React.FC<{}> = () => {
   };
 
   return (
-    <>
+    <WsApplicationContext.Provider value={{ controllerConnection }}>
       <FriendModal
         openModal={openModalFriend}
         controllerData={controllerData}
@@ -192,6 +204,16 @@ export const WsApplication: React.FC<{}> = () => {
         handleAcceptConnection={handleAcceptConnection}
         setOpenModal={setOpenModal}
       />
-    </>
+      {children}
+    </WsApplicationContext.Provider>
   );
+};
+
+export const useWsApplicationProvider = () => {
+  const context = useContext(WsApplicationContext);
+  if (context === undefined) {
+    throw new Error("Eres tontito o que?");
+  }
+
+  return context;
 };
