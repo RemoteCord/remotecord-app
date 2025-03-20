@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useApi } from "./useApi";
+import { useDebouncedSync } from "./useDebounceSync";
 
 export const useUserInfo = () => {
   const { request } = useApi();
@@ -12,16 +13,17 @@ export const useUserInfo = () => {
     });
   }, []);
 
-  const handleChangeUsername = (newUsername: string) => {
-    console.log("newUsername", newUsername);
+  const handleChangeUsername = () => {
+    console.log("newUsername", username);
     request("/api/clients/user-name", {
       method: "POST",
-      body: JSON.stringify({ username: newUsername }),
+      body: JSON.stringify({ username: username }),
     }).then((res) => {
       console.log("res", res);
       // setUsername(res.username);
     });
   };
 
-  return { username, handleChangeUsername };
+  useDebouncedSync(username, handleChangeUsername, 500);
+  return { username, handleChangeUsername, setUsername };
 };
