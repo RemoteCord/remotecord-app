@@ -1,9 +1,7 @@
 "use client";
 import { CodeClient } from "@/components/home/CodeClient";
 import { TestComponents } from "@/components/TestComponents";
-import { useSupabaseContextProvider } from "@/contexts/SupabaseContext";
 import { useStoreTauri } from "@/hooks/useStore";
-import { Copy } from "lucide-react";
 import Link from "next/link";
 export default function Home() {
   const { cleanStore } = useStoreTauri();

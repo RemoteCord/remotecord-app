@@ -3,7 +3,7 @@ import { TitleBarButton } from "./TitleBarButton";
 import { Minus, Square, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export const TitleBar: React.FC = () => {
+export const TitleBar: React.FC<{ className?: string }> = ({ className }) => {
   const [appWindow, setAppWindow] = useState<Window | null>(null);
 
   useEffect(() => {
@@ -11,7 +11,7 @@ export const TitleBar: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex gap-2">
+    <div className={`flex gap-2 ${className}`}>
       <TitleBarButton toggle={() => appWindow?.minimize()}>
         <Minus size={16} strokeWidth={2} />
       </TitleBarButton>
