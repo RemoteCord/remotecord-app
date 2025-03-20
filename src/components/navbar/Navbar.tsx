@@ -1,19 +1,21 @@
 "use client";
-import { Home, Scroll } from "lucide-react";
+import { Icon, Scroll } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { ConfigMenu } from "../config/ConfigMenu";
 import { TitleBar } from "./TitleBar";
+import { IconHomeFilled, IconArticleFilled } from "@tabler/icons-react";
+
 const items = [
   {
     title: "Home",
     url: "/",
-    icon: Home,
+    icon: IconHomeFilled,
   },
   {
     title: "Logs",
     url: "/logs",
-    icon: Scroll,
+    icon: IconArticleFilled,
   },
 ];
 

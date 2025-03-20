@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useApi } from "./useApi";
 
 export const useUserInfo = () => {
@@ -12,16 +12,18 @@ export const useUserInfo = () => {
     });
   }, []);
 
-  const handleChangeUsername = (newUsername: string) => {
-    console.log("newUsername", newUsername);
-    request("/api/clients/user-name", {
-      method: "POST",
-      body: JSON.stringify({ username: newUsername }),
-    }).then((res) => {
-      console.log("res", res);
-      // setUsername(res.username);
-    });
-  };
-
-  return { username, handleChangeUsername };
+  const handleChangeUsername = useMemo(
+    () => (newUsername: string) => {
+      console.log("newUsername", newUsername);
+      request("/api/clients/user-name", {
+        method: "POST",
+        body: JSON.stringify({ username: newUsername }),
+      }).then((res) => {
+        console.log("res", res);
+        // setUsername(res.username);
+      });
+    },
+    [username]
+  );
+  return { username, handleChangeUsername, setUsername };
 };
