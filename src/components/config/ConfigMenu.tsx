@@ -13,10 +13,15 @@ import { Input } from "../ui/input";
 import { useUserInfo } from "@/hooks/useUserInfo";
 // import { Settings } from "lucide-react";
 import { IconSettingsFilled } from "@tabler/icons-react";
+import { useStoreTauri } from "@/hooks/useStore";
+import { ConfigCard } from "./ConfigCard";
+import { useConnection } from "@/hooks/useConnection";
 
 export const ConfigMenu = () => {
-  const { openFolderDialog } = useFolderPicker();
+  const { openFolderDialog, folderPath } = useFolderPicker();
+  const { handleAutoacceptConnection, autoaccept } = useConnection();
   const { username, handleChangeUsername, setUsername } = useUserInfo();
+  const { cleanStore } = useStoreTauri();
 
   return (
     <Sheet>
@@ -24,28 +29,49 @@ export const ConfigMenu = () => {
         <IconSettingsFilled />
         Config
       </SheetTrigger>
-      <SheetContent side={"left"} className="w-[300px]">
+      <SheetContent side={"left"} className="w-[600px]">
         <SheetHeader>
           <SheetTitle>Configuration</SheetTitle>
           <SheetDescription></SheetDescription>
         </SheetHeader>
-        <div className="flex gap-6 flex-col">
-          <div>
-            <Input
-              value={username}
-              // onBlur={(e) => handleChangeUsername(e.target.value)}
-              onChange={(e) => setUsername(e.target.value)}
-            />
+        <div className="flex flex-col justify-between h-full">
+          <div className="flex flex-col gap-4">
+            <div>
+              <Input
+                value={username}
+                // onBlur={(e) => handleChangeUsername(e.target.value)}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+            <ConfigCard className="flex items-center justify-between">
+              <h2 className="font-[600]">Auto accept friend connections</h2>
+              <Switch
+                checked={autoaccept}
+                onCheckedChange={handleAutoacceptConnection}
+              />
+            </ConfigCard>
+            <ConfigCard className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <h2 className="font-[600]">Default download path</h2>
+                <button
+                  onClick={openFolderDialog}
+                  className="h-8 border px-4 py-2 flex items-center rounded-lg hover:bg-secondary hover:border-secondary transition-all duration-300"
+                >
+                  Pick Folder
+                </button>
+              </div>
+              <div>
+                <p>{folderPath}</p>
+              </div>
+            </ConfigCard>
           </div>
-          <div className="flex items-center justify-between">
-            <h2 className="font-[600]">Auto accept friend connections</h2>
-            <Switch />
-          </div>
-          <div className="flex items-center justify-between">
-            <h2 className="font-[600]">Default download path</h2>
-            <Button onClick={openFolderDialog} className="h-6 font-[600]">
-              Pick Folder
-            </Button>
+          <div className="flex flex-col gap-4">
+            <button onClick={cleanStore} className="w-fit">
+              Clean store
+            </button>
+            <button onClick={cleanStore} className="w-fit">
+              Clean store
+            </button>
           </div>
         </div>
       </SheetContent>

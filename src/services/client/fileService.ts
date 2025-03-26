@@ -97,7 +97,7 @@ export class ClientFileService {
   }> => {
     try {
       const pathDir = await getPathFolder(folder);
-      const pathJoin = `${pathDir}/${relativepath}`;
+      const pathJoin = `${pathDir}/${relativepath}`.replace("/", "");
 
       const filesAndFolders = await readDir(pathJoin, {
         baseDir: BaseDirectory.AppData,

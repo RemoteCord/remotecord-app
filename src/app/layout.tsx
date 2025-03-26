@@ -1,6 +1,4 @@
 "use client";
-
-import localFont from "next/font/local";
 import "./globals.css";
 
 import { Toaster } from "@/components/ui/toaster";
@@ -8,7 +6,7 @@ import { useEffect } from "react";
 import SupabaseContextProvider from "@/contexts/SupabaseContext";
 import { usePathname } from "next/navigation";
 import { useStoreTauri } from "@/hooks/useStore";
-import { useDeviceDetection } from "@/hooks/use-useragent";
+// import { useDeviceDetection } from "@/hooks/use-useragent";
 import { Inter } from "next/font/google";
 
 const font = Inter({ subsets: ["latin"] });
@@ -19,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const { getRecord } = useStoreTauri();
-  const device = useDeviceDetection();
+  // const device = useDeviceDetection();
   const pathname = usePathname();
 
   // useEffect(() => {

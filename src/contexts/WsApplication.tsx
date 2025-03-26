@@ -132,20 +132,32 @@ export const WsApplicationProvider: React.FC<{
         }) => {
           const { controllerid, controller, tokenConnection } = data;
           console.log("emitConnectToController", data);
-          setControllerConnection({
-            ...controller,
-            controllerid,
+
+          getRecord<boolean>("autoaccept").then((autoaccept) => {
+            console.log("autoaccept", autoaccept);
+
+            setControllerConnection({
+              ...controller,
+              controllerid,
+            });
+            setTokenConnection(tokenConnection);
+            setTokenController(token);
+
+            if (autoaccept) {
+              connect(controllerid, tokenConnection, controller.username);
+              return;
+            }
+
+            setOpenModal(true);
+
+            // if (token) {
+            //   connect(token);
+            // } else {
+            //   console.error(
+            //     "No controllerid token provided in emitConnectToController event"
+            //   );
+            // }
           });
-          setOpenModal(true);
-          setTokenConnection(tokenConnection);
-          setTokenController(token);
-          // if (token) {
-          //   connect(token);
-          // } else {
-          //   console.error(
-          //     "No controllerid token provided in emitConnectToController event"
-          //   );
-          // }
         }
       );
     };

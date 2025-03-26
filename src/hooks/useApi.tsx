@@ -7,7 +7,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export const useApi = () => {
   const { supabase, session } = useSupabaseContextProvider();
   const { getRecord } = useStoreTauri();
-  const request = async (
+  const request = async <T extends unknown>(
     input: URL | Request | string,
     init?: RequestInit & ClientOptions
   ) => {
@@ -31,7 +31,9 @@ export const useApi = () => {
 
     try {
       const response = await fetch(`${API_URL}${input}`, headersData);
-      return await response.json();
+      const res = await response.json();
+
+      return res as T;
     } catch (err: any) {
       throw err;
     }
