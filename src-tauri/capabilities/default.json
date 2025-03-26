@@ -82,6 +82,8 @@
     "system-info:allow-all",
     "upload:allow-upload",
     "upload:allow-download",
-    "log:default"
+    "log:default",
+    "updater:default",
+    "process:default"
   ]
 }

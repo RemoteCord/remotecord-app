@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { useStoreTauri } from "@/hooks/useStore";
 // import { useDeviceDetection } from "@/hooks/use-useragent";
 import { Inter } from "next/font/google";
+import { useUpdater } from "@/client/updaterClient";
 
 const font = Inter({ subsets: ["latin"] });
 
@@ -16,6 +17,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { updater } = useUpdater();
+
   const { getRecord } = useStoreTauri();
   // const device = useDeviceDetection();
   const pathname = usePathname();
@@ -37,6 +40,10 @@ export default function RootLayout({
       }
     });
   }, [pathname]);
+
+  useEffect(() => {
+    void updater();
+  }, []);
   return (
     <html lang="en" className="dark h-screen w-screen">
       <body

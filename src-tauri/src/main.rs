@@ -49,10 +49,11 @@ fn main() {
     }));
 
     let mut tauri_app = tauri::Builder::default()
-//         .plugin(tauri_plugin_log::Builder::new().target(tauri_plugin_log::Target::new(
-//     tauri_plugin_log::TargetKind::Stdout,
-//   )).build())
-
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        //         .plugin(tauri_plugin_log::Builder::new().target(tauri_plugin_log::Target::new(
+        //     tauri_plugin_log::TargetKind::Stdout,
+        //   )).build())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_upload::init())
         .plugin(tauri_plugin_fs::init())
@@ -97,7 +98,6 @@ fn main() {
             screenshot::capture,
             screenshot::get_screens
         ])
-   
         // .plugin(tauri_plugin_log::Builder::new().targets([
         //     Target::new(TargetKind::Stdout),
         //     Target::new(TargetKind::LogDir { file_name: None }),
