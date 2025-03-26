@@ -7,9 +7,9 @@ export const useUserInfo = () => {
   const { request } = useApi();
   const [username, setUsername] = useState<string>("");
   useEffect(() => {
-    request("/api/clients/user-info").then((res: { username: string }) => {
+    request<{ username: string }>("/api/clients/user-info").then((res) => {
       console.log("res", res);
-      setUsername(res.username);
+      if (res) setUsername(res.username);
     });
   }, []);
 

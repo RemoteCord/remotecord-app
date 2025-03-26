@@ -50,6 +50,7 @@ export const FriendCard: React.FC<{ friend: Friend }> = ({
     >
       <div className="flex gap-4  items-center">
         <Image
+          crossOrigin="anonymous"
           width={50}
           height={50}
           src={friend.picture}
