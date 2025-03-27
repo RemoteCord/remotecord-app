@@ -9,6 +9,7 @@ import { useStoreTauri } from "@/hooks/useStore";
 // import { useDeviceDetection } from "@/hooks/use-useragent";
 import { Inter } from "next/font/google";
 import { useUpdater } from "@/client/updaterClient";
+import { ToasterExpanded } from "@/components/ui/toaster-expand";
 
 const font = Inter({ subsets: ["latin"] });
 
@@ -17,7 +18,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { updater } = useUpdater();
+  // const { updater } = useUpdater();
 
   const { getRecord } = useStoreTauri();
   // const device = useDeviceDetection();
@@ -41,9 +42,9 @@ export default function RootLayout({
     });
   }, [pathname]);
 
-  useEffect(() => {
-    void updater();
-  }, []);
+  // useEffect(() => {
+  //   void updater();
+  // }, []);
   return (
     <html lang="en" className="dark h-screen w-screen">
       <body
@@ -51,6 +52,7 @@ export default function RootLayout({
       >
         <SupabaseContextProvider>
           <Toaster />
+          <ToasterExpanded />
           <main className="w-screen h-screen grid grid-rows-[auto_1fr]">
             {children}
           </main>

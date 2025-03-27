@@ -74,8 +74,6 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "windows": {
-      "signCommand": "trusted-signing-cli -e https://eus.codesigning.azure.net -a Azure.CodeSigning -c remotecord-certificate -d MyApp %1"
-    }
+    "windows": {}
   }
 }

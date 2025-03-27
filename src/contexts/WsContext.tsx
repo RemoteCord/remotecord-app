@@ -1,21 +1,24 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 
 import { useStoreTauri } from "@/hooks/useStore";
 import { WsService } from "@/services/client";
-import { useLogContextProvider } from "./LogContext";
 import { useWsClient } from "@/hooks/useWsClient";
 import { env } from "@/env.config";
-import { useSupabaseContextProvider } from "./SupabaseContext";
+
+import ReactHowler from "react-howler";
+import { toast } from "sonner";
 
 export type Events =
   | "uploadFile"
   | "getFilesFolder"
   | "getFileFromClient"
   | "getTasksFromClient"
-  | "runCmdCommand";
+  | "runCmdCommand"
+  | "connect"
+  | "connected";
 
 const WsContext = createContext<
   | {
@@ -42,8 +45,8 @@ const WsContextProvider: React.FC<{
 }> = ({ children }) => {
   const { setWsService, file, downloading, UploadFile, AppendLog } =
     useWsClient();
-  const { session } = useSupabaseContextProvider();
-
+  const refSoundSkype = useRef<ReactHowler>(null);
+  const [playing, setPlaying] = useState<boolean>(false);
   const [wss, setWss] = useState<Socket | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
   const { getRecord } = useStoreTauri();
@@ -128,15 +131,37 @@ const WsContextProvider: React.FC<{
 
     socket.on("runCmdCommand", wsService.runCmdCommand);
 
-    socket.onAny((eventName: Events, ...args) =>
-      AppendLog(eventName, username, ...args)
-    );
+    socket.onAny((eventName: Events, ...args) => {
+      AppendLog(eventName, username, ...args);
+      console.log("onAny", eventName, args);
+      if (eventName === "connected") return;
+      setPlaying(true);
+      refSoundSkype.current?.howler.play();
+
+      setTimeout(() => {
+        setPlaying(false);
+        refSoundSkype.current?.howler.stop();
+        refSoundSkype.current?.howler.seek(0);
+      }, 500);
+
+      toast(`Command ran: ${eventName}`, {
+        description: `By: ${username}`,
+      });
+    });
   };
 
   return (
     <WsContext.Provider
       value={{ wss, connect, disconnect, file, connected, downloading }}
     >
+      <div className="absolute">
+        <ReactHowler
+          playing={playing}
+          ref={refSoundSkype}
+          src={["/sounds/skype_sound.mp3"]}
+          html5={true}
+        />
+      </div>
       {children}
     </WsContext.Provider>
   );

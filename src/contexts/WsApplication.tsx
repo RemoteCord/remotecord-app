@@ -1,17 +1,20 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 
 import { useStoreTauri } from "@/hooks/useStore";
 import { useWsContextProvider } from "./WsContext";
 import { wsManager } from "@/client/WsClient";
+import { Howl, Howler } from "howler";
+import ReactHowler from "react-howler";
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ConnectionModal } from "@/components/modals/ConnectionModal";
 import { FriendModal } from "@/components/modals/AddFriendModal";
 import { useSupabaseContextProvider } from "./SupabaseContext";
+import { useSounds } from "@/hooks/use-sounds";
 
 interface ControllerConnectionType {
   username: string;
@@ -31,7 +34,21 @@ export const WsApplicationProvider: React.FC<{
 }> = ({ children }) => {
   const [wssApplication, setWssApplication] = useState<Socket | null>(null);
   const { session } = useSupabaseContextProvider();
-  const [connected, setConnected] = useState<boolean>(false);
+  // const {
+  //   soundRequestConnection,
+  //   // soundRequestConnection,
+  // } = useSounds();
+  const [playing, setPlaying] = useState<boolean>(false);
+  const [playingJoin, setPlayingJoin] = useState<boolean>(false);
+
+  const refSound = useRef<ReactHowler>(null);
+  const refSoundJoin = useRef<ReactHowler>(null);
+
+  // const soundRequestConnection = new Howl({
+  //   src: "/sounds/call-request.mp3",
+  //   html5: true,
+  // });
+
   const { toast } = useToast();
 
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -172,20 +189,57 @@ export const WsApplicationProvider: React.FC<{
         tokenConnection,
         controllerConnection.username
       );
-      setOpenModal(false);
       setControllerData({
         username: "",
         avatar: "",
         token: "",
       });
-    } else {
-      setOpenModal(false);
 
+      setTimeout(() => {
+        setPlayingJoin(true);
+        refSoundJoin.current?.seek(0);
+        refSoundJoin.current?.howler.volume(1);
+        refSoundJoin.current?.howler.play();
+
+        setTimeout(() => {
+          refSoundJoin.current?.howler.stop();
+          refSoundJoin.current?.seek(0);
+          setPlayingJoin(false);
+        }, 1000);
+      }, 400);
+    } else {
       console.error(
         "No controllerid token provided in emitConnectToController"
       );
     }
+    setOpenModal(false);
+
+    // soundRequestConnection.fade(1, 0, 1000).on("fade", () => {
+    //   console.log("fade");
+    //   soundRequestConnection.stop();
+    // });
   };
+
+  useEffect(() => {
+    console.log("openModal", openModal, "playing", playing); // Add playing to debug log
+    if (openModal) {
+      refSound.current?.seek(0);
+      refSound.current?.howler.volume(1);
+      refSound.current?.howler.play();
+      setPlaying(true);
+    } else {
+      if (playing) {
+        // refSoundJoin.current?.howler.play();
+        refSound.current?.howler.fade(1, 0, 500);
+
+        setTimeout(() => {
+          refSound.current?.howler.stop();
+          refSound.current?.seek(0);
+          setPlaying(false);
+        }, 500);
+      }
+    }
+  }, [openModal]);
 
   const handleAcceptFriend = () => {
     // connect(tokenConnection, controllerData.username);
@@ -205,6 +259,25 @@ export const WsApplicationProvider: React.FC<{
 
   return (
     <WsApplicationContext.Provider value={{ controllerConnection }}>
+      <div className="absolute">
+        <ReactHowler
+          // playing={playing}
+          // playing={playing}
+          playing={playing}
+          ref={refSound}
+          src={["/sounds/call-request.mp3"]}
+          html5={true}
+        />
+        <ReactHowler
+          // playing={playing}
+          // playing={playing}
+          playing={playingJoin}
+          ref={refSoundJoin}
+          src={["/sounds/call-join.mp3"]}
+          html5={true}
+        />
+      </div>
+
       <FriendModal
         openModal={openModalFriend}
         controllerData={controllerData}
