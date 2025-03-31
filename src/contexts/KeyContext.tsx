@@ -9,7 +9,8 @@ type KeyEvent = Event<string>;
 
 const KeyContext = createContext<
   | {
-      key: string;
+      keys: string[];
+      setListening: (listening: boolean) => void;
     }
   | undefined
 >(undefined);
@@ -17,35 +18,51 @@ const KeyContext = createContext<
 const KeyContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [key, setKey] = useState<string>("");
+  const [keys, setKeys] = useState<string[]>([]);
+  const [listening, setListening] = useState<boolean>(false);
+
+  const handlePressed = (event: KeyEvent) => {
+    const { payload: key } = event;
+    if (key === "␣") {
+      setKeys((prev) => {
+        const newKeys = [...prev, " "];
+        return newKeys.length > 20 ? newKeys.slice(-20) : newKeys;
+      });
+    } else {
+      setKeys((prev) => {
+        const newKeys = [...prev, key];
+        return newKeys.length > 20 ? newKeys.slice(-20) : newKeys;
+      });
+    }
+
+    console.log("keys", key);
+  };
 
   useEffect(() => {
-    const keyLogger = new KeyloggerService();
+    console.log("keys", keys);
+  }, [keys]);
 
-    const handlePressed = (event: KeyEvent) => {
-      const { payload: key } = event;
-      setKey(key);
-      // console.log("key", key);
-      keyLogger.keyPress(event);
-    };
+  const handleReleased = () => {
+    // setKey("");
+  };
 
-    const handleReleased = () => {
-      setKey("");
-    };
-
-    void onOpenUrl((urls) => {
-      console.log("deep link:", urls);
-    });
-
-    listen("KeyPress", handlePressed);
-    listen("KeyRelease", handleReleased);
-  }, []);
+  useEffect(() => {
+    if (listening) {
+      listen("KeyPress", handlePressed);
+      listen("KeyRelease", handleReleased);
+    }
+  }, [listening]);
 
   // useEffect(() => {
-  //   console.log(key);
-  // }, [key]);
 
-  return <KeyContext.Provider value={{ key }}>{children}</KeyContext.Provider>;
+  //   console.log("keys", keys);
+  // }, [keys]);
+
+  return (
+    <KeyContext.Provider value={{ keys, setListening }}>
+      {children}
+    </KeyContext.Provider>
+  );
 };
 
 export const useKeyContextProvider = () => {

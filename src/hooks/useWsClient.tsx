@@ -5,7 +5,8 @@ import { download } from "@tauri-apps/plugin-upload";
 import { useState } from "react";
 import { useStoreTauri } from "./useStore";
 import { useLogContextProvider } from "@/contexts/LogContext";
-import { Events } from "@/contexts/WsContext";
+import { Events, useWsContextProvider } from "@/contexts/WsContext";
+import { Socket } from "socket.io-client";
 
 export const useWsClient = () => {
   const [wsService, setWsService] = useState<WsService>();
@@ -31,7 +32,7 @@ export const useWsClient = () => {
     });
   };
 
-  const UploadFile = async (data: WS.UploadFile) => {
+  const UploadFile = async (data: WS.UploadFile, socket: Socket) => {
     const { fileroute } = data;
     console.log("uploadFile", data);
     let progressDownload = 0;
@@ -60,6 +61,10 @@ export const useWsClient = () => {
 
       if (progressDownload === total) {
         setDownloading(false);
+        // socket.emit("message", {
+        //   message: "File downloaded",
+        //   editReply: true,
+        // });
       }
     });
   };
