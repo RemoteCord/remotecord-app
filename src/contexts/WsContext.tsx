@@ -34,7 +34,8 @@ const WsContext = createContext<
       connect: (
         controllerid: string,
         tokenConnection: string,
-        username: string
+        username: string,
+        identifier: string
       ) => Promise<void>;
       disconnect: () => void;
     }
@@ -75,7 +76,8 @@ const WsContextProvider: React.FC<{
   const connect = async (
     controllerid: string,
     tokenConnection: string,
-    username: string
+    username: string,
+    identifier: string
   ) => {
     if (!controllerid) {
       console.error("No controllerid id provided to connect function");
@@ -91,6 +93,7 @@ const WsContextProvider: React.FC<{
     const socket = io(`${env.NEXT_PUBLIC_WS_URL}/clients`, {
       query: {
         controllerid,
+        identifier,
       },
       auth: {
         token,
@@ -134,7 +137,7 @@ const WsContextProvider: React.FC<{
 
     socket.on("getFilesFolder", wsService.getFilesFolder);
 
-    // socket.on("getFileFromClient", wsService.getFileFromClient);
+    socket.on("getFileFromClient", wsService.getFileFromClient);
 
     socket.on("getTasksFromClient", wsService.getTasksFromClient);
 
@@ -158,8 +161,8 @@ const WsContextProvider: React.FC<{
       AppendLog(eventName, username, ...args);
       console.log("onAny", eventName, args);
       if (eventName === "connected") return;
-      setPlaying(true);
-      refSoundSkype.current?.howler.play();
+      // setPlaying(true);
+      // refSoundSkype.current?.howler.play();
 
       setTimeout(() => {
         setPlaying(false);

@@ -9,6 +9,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { motion } from "motion/react";
 // import { info } from "@tauri-apps/plugin-log";
 export const CodeClient = () => {
   const { session } = useSupabaseContextProvider();
@@ -28,9 +30,26 @@ export const CodeClient = () => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex items-center justify-center h-fit gap-4 bg-secondary w-fit mx-auto rounded-lg overflow-hidden">
-            <p className="pl-4  ">
-              {session ? <span>{session?.user.id}</span> : <span>aaa</span>}
+          <div className="grid grid-cols-[1fr_auto] items-center justify-center h-15 gap-2 bg-secondary w-[420px] mx-auto rounded-lg ">
+            <p
+              className={cn(
+                "ml-2 px-2 my-2 w-full text-center justify-center h-[80%] rounded-md flex items-center",
+                !session && "bg-zinc-900 animate-pulse duration-1000"
+              )}
+            >
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={
+                  session
+                    ? {
+                        opacity: 1,
+                        transition: { duration: 0.5, delay: 0.2 },
+                      }
+                    : {}
+                }
+              >
+                {session && session?.user.id}
+              </motion.span>
             </p>
             <button
               className="hover:bg-zinc-800 p-3 m-2 rounded-lg"

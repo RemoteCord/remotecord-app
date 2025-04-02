@@ -61,10 +61,10 @@ export const useWsClient = () => {
 
       if (progressDownload === total) {
         setDownloading(false);
-        // socket.emit("message", {
-        //   message: "File downloaded",
-        //   editReply: true,
-        // });
+        socket.emit("message", {
+          message: "File downloaded",
+          editReply: true,
+        });
       }
     });
   };

@@ -15,9 +15,10 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { DialogFooter } from "@/components/ui/dialogConnection";
-
-export const FriendCard: React.FC<{ friend: Friend }> = ({
+import { motion } from "motion/react";
+export const FriendCard: React.FC<{ friend: Friend; idx: number }> = ({
   friend,
+  idx,
   ...props
 }) => {
   const { deleteFriend, syncPermissions } = useFriends();
@@ -44,7 +45,10 @@ export const FriendCard: React.FC<{ friend: Friend }> = ({
   };
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, delay: idx * 0.1 }}
       {...props}
       className="flex items-center group gap-4 border-2 justify-between p-4 rounded-xl border-secondary"
     >
@@ -137,6 +141,6 @@ export const FriendCard: React.FC<{ friend: Friend }> = ({
           </DialogContent>
         </Dialog>
       </div>
-    </div>
+    </motion.div>
   );
 };

@@ -20,6 +20,7 @@ interface ControllerConnectionType {
   username: string;
   avatar: string;
   controllerid: string;
+  identifier: string;
 }
 
 const WsApplicationContext = createContext<
@@ -69,6 +70,7 @@ export const WsApplicationProvider: React.FC<{
       username: "",
       avatar: "",
       controllerid: "",
+      identifier: "",
     });
   const [controllerid, setControllerid] = useState<string | null>(null);
 
@@ -146,8 +148,10 @@ export const WsApplicationProvider: React.FC<{
           };
           controllerid: string;
           tokenConnection: string;
+          identifier: string;
         }) => {
-          const { controllerid, controller, tokenConnection } = data;
+          const { controllerid, controller, tokenConnection, identifier } =
+            data;
           console.log("emitConnectToController", data);
 
           getRecord<boolean>("autoaccept").then((autoaccept) => {
@@ -156,12 +160,18 @@ export const WsApplicationProvider: React.FC<{
             setControllerConnection({
               ...controller,
               controllerid,
+              identifier,
             });
             setTokenConnection(tokenConnection);
             setTokenController(token);
 
             if (autoaccept) {
-              connect(controllerid, tokenConnection, controller.username);
+              connect(
+                controllerid,
+                tokenConnection,
+                controller.username,
+                identifier
+              );
               return;
             }
 
@@ -187,7 +197,8 @@ export const WsApplicationProvider: React.FC<{
       connect(
         controllerConnection.controllerid,
         tokenConnection,
-        controllerConnection.username
+        controllerConnection.username,
+        controllerConnection.identifier
       );
       setControllerData({
         username: "",

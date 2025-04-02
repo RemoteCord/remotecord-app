@@ -16,12 +16,18 @@ import { IconSettingsFilled } from "@tabler/icons-react";
 import { useStoreTauri } from "@/hooks/useStore";
 import { ConfigCard } from "./ConfigCard";
 import { useConnection } from "@/hooks/useConnection";
+import { SoundModal } from "../modals/SoundModal";
 
 export const ConfigMenu = () => {
   const { openFolderDialog, folderPath } = useFolderPicker();
   const { handleAutoacceptConnection, autoaccept } = useConnection();
   const { username, handleChangeUsername, setUsername } = useUserInfo();
-  const { cleanStore } = useStoreTauri();
+  const { cleanStore, deleteRecord } = useStoreTauri();
+
+  const handleSignOut = async () => {
+    await deleteRecord("auth");
+    location.reload();
+  };
 
   return (
     <Sheet>
@@ -55,7 +61,7 @@ export const ConfigMenu = () => {
                 <h2 className="font-[600]">Default download path</h2>
                 <button
                   onClick={openFolderDialog}
-                  className="h-8 border px-4 py-2 flex items-center rounded-lg hover:bg-secondary hover:border-secondary transition-all duration-300"
+                  className="button_style border px-4 py-1 flex items-center rounded-lg hover:border-secondary"
                 >
                   Pick Folder
                 </button>
@@ -64,13 +70,16 @@ export const ConfigMenu = () => {
                 <p>{folderPath}</p>
               </div>
             </ConfigCard>
+            <div>
+              <SoundModal />
+            </div>
           </div>
           <div className="flex flex-col gap-4">
-            <button onClick={cleanStore} className="w-fit">
-              Clean store
-            </button>
-            <button onClick={cleanStore} className="w-fit">
-              Clean store
+            <button
+              onClick={handleSignOut}
+              className="w-full bg-red-900 px-4 py-2 rounded-lg hover:bg-red-900/80 transition-all duration-300"
+            >
+              Sign out
             </button>
           </div>
         </div>

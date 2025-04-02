@@ -19,8 +19,8 @@ export const FriendsCard = () => {
   }, [friends]);
   return (
     <div className=" grid grid-cols-3 w-[100%] mt-10 gap-4 mx-auto">
-      {localFriends.map((friend) => (
-        <FriendCard key={friend.controllerid} friend={friend} />
+      {localFriends.map((friend, idx) => (
+        <FriendCard key={friend.controllerid} friend={friend} idx={idx} />
       ))}
     </div>
   );

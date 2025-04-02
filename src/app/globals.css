@@ -11,6 +11,15 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  .button_style {
+    background: #18181b;
+    transition: all 0.3s ease;
+    color: white;
+  }
+  .button_style:hover {
+    background: #27272a;
+  }
 }
 
 @layer base {

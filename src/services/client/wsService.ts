@@ -54,11 +54,12 @@ export class WsService {
     });
   };
 
-  getScreensFromClient = async () => {
+  getScreensFromClient = async (data: { identifier: string }) => {
     const screens = await OsService.getScreens();
 
     this.socket.emit("getScreensFromClient", {
       screens,
+      identifier: data.identifier,
     });
   };
 

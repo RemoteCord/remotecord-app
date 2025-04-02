@@ -1,6 +1,6 @@
 import { load } from "@tauri-apps/plugin-store";
 
-type Records = "auth" | "downloadFolder" | "autoaccept";
+type Records = "auth" | "downloadFolder" | "autoaccept" | "sounds";
 
 export class StoreService {
   private name: string;
@@ -22,6 +22,11 @@ export class StoreService {
   getRecord = async <T>(key: Records) => {
     const store = await load(`${this.name}.json`, { autoSave: true });
     return store.get(key) as T;
+  };
+
+  deleteRecord = async (key: Records) => {
+    const store = await load(`${this.name}.json`, { autoSave: true });
+    await store.delete(key);
   };
 
   cleanStore = async () => {

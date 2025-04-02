@@ -24,7 +24,7 @@ export const FriendModal = ({
   setOpenModal: Dispatch<SetStateAction<boolean>>;
 }) => {
   return (
-    <Dialog open={openModal}>
+    <Dialog open={openModal} onOpenChange={setOpenModal}>
       <DialogContent>
         <DialogHeader className="flex flex-col gap-4">
           <DialogTitle className="flex gap-4 items-center">
