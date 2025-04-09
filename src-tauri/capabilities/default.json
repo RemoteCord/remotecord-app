@@ -1,0 +1,82 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "enables the default permissions",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-start-dragging",
+    "core:window:allow-minimize",
+    "core:window:allow-close",
+    "store:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "https://*.luqueee.dev"
+        },
+        {
+          "url": "http://localhost:3002"
+        },
+        {
+          "url": "https://*.catbox.moe"
+        }
+      ],
+      "deny": [
+        {
+          "url": "https://private.tauri.app"
+        }
+      ]
+    },
+    "dialog:default",
+    "clipboard-manager:default",
+    "clipboard-manager:allow-write-text",
+    "fs-pro:default",
+    "fs:default",
+    {
+      "identifier": "fs:scope-desktop-recursive",
+      "allow": [
+        {
+          "path": "$DESKTOP/**"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:scope-download-recursive",
+      "allow": [
+        {
+          "path": "$DOWNLOAD/**"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:scope-document-recursive",
+      "allow": [
+        {
+          "path": "$DOCUMENTS/**"
+        }
+      ]
+    },
+    "fs:allow-open",
+    "fs:allow-write",
+    "fs:allow-read",
+    "fs:read-files",
+    "fs:write-files",
+    "fs:read-dirs",
+    "fs:allow-read-text-file",
+    "fs:allow-rename",
+    "fs:allow-mkdir",
+    "fs:allow-remove",
+    "fs:allow-write-text-file",
+    "fs:scope-download-recursive",
+    "fs:scope-resource-recursive",
+    "upload:default",
+    "system-info:allow-all",
+    "upload:allow-upload",
+    "upload:allow-download",
+    "os:default",
+    "shellx:allow-execute",
+    "shellx:allow-spawn",
+    "shellx:allow-open"
+  ]
+}

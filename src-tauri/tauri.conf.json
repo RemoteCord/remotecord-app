@@ -1,0 +1,58 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "remotecord",
+  "version": "0.1.0",
+  "identifier": "com.tauri.dev",
+  "build": {
+    "frontendDist": "../build",
+    "devUrl": "http://localhost:3006",
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "RemoteCord",
+        "width": 1000,
+        "height": 600,
+        "resizable": false,
+        "fullscreen": false,
+        "decorations": false
+      }
+    ],
+    "security": {
+      "headers": {
+        "Cross-Origin-Opener-Policy": "same-origin",
+        "Cross-Origin-Embedder-Policy": "require-corp",
+        "Timing-Allow-Origin": [
+          "https://developer.mozilla.org",
+          "https://example.com",
+          "https://preview.luqueee.dev"
+        ],
+        "Access-Control-Expose-Headers": "Tauri-Custom-Header",
+        "Tauri-Custom-Header": {
+          "key1": "'value1' 'value2'",
+          "key2": "'value3'"
+        }
+      },
+      "csp": {
+        "default-src": "'self'",
+        "connect-src": "ipc: http://ipc.localhost http://tauri.localhost https://*.supabase.co https://*.luqueee.dev wss://*.luqueee.dev",
+        "img-src": "'self' https://cdn.discordapp.com https://lh3.googleusercontent.com"
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "createUpdaterArtifacts": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {}
+  }
+}
