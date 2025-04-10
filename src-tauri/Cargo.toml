@@ -24,7 +24,8 @@ log = "0.4"
 tauri = { version = "2.4.1",  features = [
     "devtools",
     "tray-icon",
-    "image-png"] }
+    "image-png",
+    ] }
 tauri-plugin-log = "2.0.0-rc"
 tauri-plugin-store = "2"
 tauri-plugin-http = { version = "2", features = ["multipart"] }
@@ -39,3 +40,15 @@ tauri-plugin-shellx = "2.0.16"
 screenshots = "0.5.0"
 base64 = "0.13"
 rdev = { version = "0.5.0", features = ["serde"] }
+
+
+[dependencies.nokhwa]
+version = "0.10"
+# Use the native input backends, enable WGPU integration
+features = ["input-native", "output-wgpu"]
+
+# add this to enable exporting to a JPEG/PNG
+[dependencies.image]
+version = "0.25"
+features = ["default-formats"]
+

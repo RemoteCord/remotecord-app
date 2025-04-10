@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import { FriendsCard } from "@/features/friends/FriendsCard";
 import { CodeClient } from "@/features/home/components/CodeClient";
+import { WebcamService } from "@/features/websocket/services/webcam.service";
 
 import { Link } from "react-router-dom";
 
@@ -14,6 +15,16 @@ const Home = () => {
       {/* <Link to="/auth">auth</Link>
 
       <Button variant="default">Default</Button> */}
+
+      {/* <button type="button" onClick={() => WebcamService.listAllWebcams()}>
+        webcams
+      </button>
+      <button
+        type="button"
+        onClick={() => WebcamService.makeScreenshotWebcam(1)}
+      >
+        webcam screenshot
+      </button> */}
     </div>
   );
 };

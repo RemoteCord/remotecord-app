@@ -1,9 +1,16 @@
-use std::{fs, io::Read, path::Path};
+use std::{fs, io::{Read, Seek}, path::Path, time::SystemTime, fs::File};
 
 use keystroke::start_keystroke_listener;
 use tauri_plugin_http::reqwest;
 pub mod screenshot;
 mod keystroke;
+
+
+use image::{RgbImage, Rgb, DynamicImage, ImageBuffer};
+use base64::{encode};
+
+use nokhwa::{query, Camera, utils::{ApiBackend, CameraIndex}};
+use serde::{Serialize, Deserialize};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -36,10 +43,90 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![open_file,   screenshot::capture,
-            screenshot::get_screens])
+            screenshot::get_screens, get_webcams, capture_webcam_screenshot])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
+#[derive(Serialize, Deserialize)]
+struct WebcamInfo {
+    index: usize,
+    name: String,
+    description: String,
+}
+
+#[tauri::command]
+fn get_webcams() -> Result<Vec<WebcamInfo>, String> {
+    // Query all available camera devices
+    match query(nokhwa::utils::ApiBackend::Auto) {
+        Ok(devices) => {
+            let webcams = devices.into_iter().enumerate().map(|(idx, device)| {
+                WebcamInfo {
+                    index: idx,
+                    name: device.human_name(),
+                    description: device.description().to_string(),
+                    // description: device.description().map(|s| s.to_string()),
+                }
+            }).collect();
+            Ok(webcams)
+        },
+        Err(e) => Err(format!("Failed to query cameras: {}", e))
+    }
+}
+
+#[tauri::command]
+fn capture_webcam_screenshot(index: usize) -> Result<String, String> {
+    // Query all video devices using Auto backend
+    match query(ApiBackend::Auto) {
+        Ok(devices) => {
+            // Map each device to WebcamInfo (with index and name)
+            let webcams: Vec<WebcamInfo> = devices.into_iter().enumerate().map(|(idx, device)| {
+                WebcamInfo {
+                    index: idx,
+                    name: device.human_name(),
+                    description: device.description().to_string(),
+                    // description: device.description().map(|s| s.to_string()),
+                }
+            }).collect();
+
+            // Check if the camera_index is valid
+            if index >= webcams.len() {
+                return Err("Invalid camera index".to_string());
+            }
+
+            // Get the webcam device based on the provided index
+            let device = &webcams[index];
+
+            // Create a Camera instance from the device index
+            let format = nokhwa::utils::RequestedFormat::new::<nokhwa::pixel_format::RgbFormat>(
+                nokhwa::utils::RequestedFormatType::AbsoluteHighestFrameRate
+            );
+            let mut camera = Camera::new(CameraIndex::Index(device.index as u32), format).map_err(|e| e.to_string())?;
+            // Capture a frame from the selected webcam
+            let frame = camera.frame().map_err(|e| e.to_string())?;
+
+            // Convert the frame into an image (as RgbImage)
+            let rgba = frame.decode_image::<nokhwa::pixel_format::RgbFormat>().map_err(|e| e.to_string())?;
+            let width = rgba.width() as u32;
+            let height = rgba.height() as u32;
+            let raw_data = rgba.into_raw();
+            let image: RgbImage = ImageBuffer::from_raw(width, height, raw_data).unwrap();
+
+            // Encode the image as PNG and convert to Base64
+            let mut img_bytes = Vec::new();
+            let dynamic_image = DynamicImage::ImageRgb8(image);
+            dynamic_image.write_to(&mut std::io::Cursor::new(&mut img_bytes), image::ImageFormat::Png)
+                .map_err(|e| e.to_string())?;
+
+            let base64_image = encode(&img_bytes);
+
+            // Return the Base64 string representing the image
+            Ok(base64_image)
+        },
+        Err(e) => Err(format!("Failed to query cameras: {}", e)),
+    }
+}
+
+
 
 #[tauri::command]
 async fn open_file(path: String, token: String, apiurl: String) -> Result<String, String> {

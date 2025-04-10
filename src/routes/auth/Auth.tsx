@@ -11,17 +11,20 @@ const Auth = () => {
     });
   };
   return (
-    <div>
-      <p>Auth</p>
-      <a href="/">home</a>
-      <div className={"flex flex-col"}>
-        <button type={"button"} onClick={() => loginWithRedirect()}>
-          login
-        </button>
-        <button type={"button"} onClick={() => handleLogout()}>
+    <div className={"flex flex-col items-center justify-center h-full"}>
+      <button
+        type={"button"}
+        onClick={() => loginWithRedirect()}
+        className={
+          "mb-20 px-8 py-4 border-2 rounded-lg text-2xl hover:bg-border transition-all duration-200 font-[300] "
+        }
+      >
+        LOGIN
+      </button>
+      {/* <button type={"button"} onClick={() => handleLogout()}>
           logout
-        </button>
-      </div>
+        </button> */}
+
       {/* <Button variant="default">Default</Button> */}
     </div>
   );

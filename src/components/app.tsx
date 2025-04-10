@@ -30,11 +30,11 @@ export function App() {
 
   return (
     // <React.StrictMode>
-    <div id="app">
+    <>
       <LoggedProvider>
         <Providers>
           <WsClient>
-            <main>
+            <main className="h-full w-full">
               <Navbar />
               <Suspense fallback={<div>Loading...</div>}>
                 <Routes>
@@ -52,7 +52,7 @@ export function App() {
       </LoggedProvider>
 
       <Toaster />
-    </div>
+    </>
     // </React.StrictMode>
   );
 }
