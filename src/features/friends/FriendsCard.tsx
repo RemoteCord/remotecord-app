@@ -1,6 +1,6 @@
-import { type Friend, useFriends } from "./hooks/useFriends";
-import { FriendCard } from "./FriendCard";
 import { useEffect, useState } from "react";
+import { FriendCard } from "./FriendCard";
+import { type Friend, useFriends } from "./hooks/useFriends";
 
 export const FriendsCard = () => {
   const { friends, getFriends } = useFriends();
@@ -19,7 +19,7 @@ export const FriendsCard = () => {
   }, [friends]);
   return (
     <div className=" grid grid-cols-3 w-[100%] mt-10 gap-4 mx-auto">
-      {localFriends.map((friend, idx) => (
+      {localFriends?.map((friend, idx) => (
         <FriendCard key={friend.controllerid} friend={friend} idx={idx} />
       ))}
     </div>

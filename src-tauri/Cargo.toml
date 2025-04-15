@@ -47,8 +47,8 @@ version = "0.10"
 # Use the native input backends, enable WGPU integration
 features = ["input-native", "output-wgpu"]
 
+
 # add this to enable exporting to a JPEG/PNG
 [dependencies.image]
 version = "0.25"
 features = ["default-formats"]
-

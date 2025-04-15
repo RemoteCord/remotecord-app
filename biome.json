@@ -30,7 +30,8 @@
     "rules": {
       "recommended": true,
       "correctness": {
-        "useExhaustiveDependencies": "off"
+        "useExhaustiveDependencies": "off",
+        "noUnusedImports": "error"
       },
       "complexity": {
         "noStaticOnlyClass": "off"

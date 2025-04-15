@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/Button";
 import {
   Dialog,
   DialogContent,
@@ -5,7 +6,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/Button";
 import type { Dispatch, SetStateAction } from "react";
 
 export const FriendModal = ({
@@ -19,7 +19,7 @@ export const FriendModal = ({
     username: string;
     avatar: string;
   };
-  handleAcceptFriend: () => void;
+  handleAcceptFriend: (accept: boolean) => void;
   setOpenModal: Dispatch<SetStateAction<boolean>>;
 }) => {
   return (
@@ -41,9 +41,15 @@ export const FriendModal = ({
             {controllerData?.username} wants to add you as a friend
           </DialogTitle>
           <DialogDescription className="flex gap-8">
-            <Button onClick={handleAcceptFriend}>Accept</Button>
+            <Button onClick={() => handleAcceptFriend(true)}>Accept</Button>
 
-            <Button variant={"destructive"} onClick={() => setOpenModal(false)}>
+            <Button
+              variant={"destructive"}
+              onClick={() => {
+                handleAcceptFriend(false);
+                setOpenModal(false);
+              }}
+            >
               Decline
             </Button>
           </DialogDescription>

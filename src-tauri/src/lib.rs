@@ -7,10 +7,14 @@ mod keystroke;
 
 
 use image::{RgbImage, Rgb, DynamicImage, ImageBuffer};
+use image::codecs::png::{PngEncoder, CompressionType, FilterType};
+use image::ImageEncoder;
 use base64::{encode};
 
-use nokhwa::{query, Camera, utils::{ApiBackend, CameraIndex}};
+use nokhwa::{pixel_format::RgbFormat, query, utils::{ApiBackend, CameraIndex, FrameFormat, RequestedFormat, RequestedFormatType}, Camera};
 use serde::{Serialize, Deserialize};
+
+
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -47,7 +51,7 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct WebcamInfo {
     index: usize,
     name: String,
@@ -74,57 +78,24 @@ fn get_webcams() -> Result<Vec<WebcamInfo>, String> {
 }
 
 #[tauri::command]
-fn capture_webcam_screenshot(index: usize) -> Result<String, String> {
-    // Query all video devices using Auto backend
-    match query(ApiBackend::Auto) {
-        Ok(devices) => {
-            // Map each device to WebcamInfo (with index and name)
-            let webcams: Vec<WebcamInfo> = devices.into_iter().enumerate().map(|(idx, device)| {
-                WebcamInfo {
-                    index: idx,
-                    name: device.human_name(),
-                    description: device.description().to_string(),
-                    // description: device.description().map(|s| s.to_string()),
-                }
-            }).collect();
+fn capture_webcam_screenshot(index: u32) -> Result<(), String> {
+    // Use the provided index parameter
+  // first camera in system
+let index = CameraIndex::Index(index); 
+// request the absolute highest resolution CameraFormat that can be decoded to RGB.
+let requested = RequestedFormat::new::<RgbFormat>(RequestedFormatType::AbsoluteHighestFrameRate);
+// make the camera
+let mut camera = Camera::new(index, requested).map_err(|e| e.to_string())?;
 
-            // Check if the camera_index is valid
-            if index >= webcams.len() {
-                return Err("Invalid camera index".to_string());
-            }
-
-            // Get the webcam device based on the provided index
-            let device = &webcams[index];
-
-            // Create a Camera instance from the device index
-            let format = nokhwa::utils::RequestedFormat::new::<nokhwa::pixel_format::RgbFormat>(
-                nokhwa::utils::RequestedFormatType::AbsoluteHighestFrameRate
-            );
-            let mut camera = Camera::new(CameraIndex::Index(device.index as u32), format).map_err(|e| e.to_string())?;
-            // Capture a frame from the selected webcam
-            let frame = camera.frame().map_err(|e| e.to_string())?;
-
-            // Convert the frame into an image (as RgbImage)
-            let rgba = frame.decode_image::<nokhwa::pixel_format::RgbFormat>().map_err(|e| e.to_string())?;
-            let width = rgba.width() as u32;
-            let height = rgba.height() as u32;
-            let raw_data = rgba.into_raw();
-            let image: RgbImage = ImageBuffer::from_raw(width, height, raw_data).unwrap();
-
-            // Encode the image as PNG and convert to Base64
-            let mut img_bytes = Vec::new();
-            let dynamic_image = DynamicImage::ImageRgb8(image);
-            dynamic_image.write_to(&mut std::io::Cursor::new(&mut img_bytes), image::ImageFormat::Png)
-                .map_err(|e| e.to_string())?;
-
-            let base64_image = encode(&img_bytes);
-
-            // Return the Base64 string representing the image
-            Ok(base64_image)
-        },
-        Err(e) => Err(format!("Failed to query cameras: {}", e)),
-    }
+// get a frame
+let frame = camera.frame().map_err(|e| e.to_string())?;
+println!("Captured Single Frame of {}", frame.buffer().len());
+// decode into an ImageBuffer
+let decoded = frame.decode_image::<RgbFormat>().map_err(|e| e.to_string())?;
+println!("Decoded Frame of {}", decoded.len());
+Ok(())
 }
+
 
 
 

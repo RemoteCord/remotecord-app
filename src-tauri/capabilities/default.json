@@ -20,6 +20,9 @@
         },
         {
           "url": "https://*.catbox.moe"
+        },
+        {
+          "url": "https://*.remotecord.app"
         }
       ],
       "deny": [

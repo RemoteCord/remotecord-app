@@ -1,13 +1,14 @@
+import { useKeyContextProvider } from "@/contexts/KeyContext";
 import { env } from "@/shared/env.config";
 import { useAuth0 } from "@auth0/auth0-react";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { io, type Socket } from "socket.io-client";
+import { type Socket, io } from "socket.io-client";
 import { toast } from "sonner";
-import { WsApplication } from "./WsApplication";
-import { WsService } from "./ws.service";
-import { useWsClient } from "./hooks/useWsClient";
-import { useKeyContextProvider } from "@/contexts/KeyContext";
 import { DownloadingFile } from "./DownloadingFile";
+import { WsApplication } from "./WsApplication";
+import { useWsClient } from "./hooks/useWsClient";
+import { WsService } from "./ws.service";
+import { useWebcams } from "../webcam/hooks/useWebcams";
 
 export type Events =
   | "uploadFile"
@@ -48,7 +49,7 @@ export const WsClient: React.FC<{ children: React.ReactNode }> = ({
   const [connected, setConnected] = useState<boolean>(false);
   const { getAccessTokenSilently } = useAuth0();
   const { setListening, keys } = useKeyContextProvider();
-
+  const { listWebcams, takeScreenshotWebcam } = useWebcams();
   const keysRef = useRef<string[]>([]);
 
   // Update the ref whenever keys changes
@@ -87,6 +88,8 @@ export const WsClient: React.FC<{ children: React.ReactNode }> = ({
     // Ensure URL and query params are fully constructed before connecting
     const socketUrl = `${env.VITE_WS_URL}/clients`;
     const socketOptions = {
+      transports: ["websocket"],
+
       query: {
         controllerid: controllerid || "",
         identifier: identifier || "",
@@ -96,7 +99,7 @@ export const WsClient: React.FC<{ children: React.ReactNode }> = ({
         tokenConnection,
       },
       forceNew: true,
-      reconnection: true,
+      reconnection: false,
     };
 
     const socket = io(socketUrl, socketOptions);
@@ -173,7 +176,27 @@ export const WsClient: React.FC<{ children: React.ReactNode }> = ({
 
       toast(`Command ran: ${eventName}`);
     });
+    socket.on("getCameras", async (data: { identifier: string }) => {
+      const webcams = await listWebcams();
+      console.log("webcams", webcams, data);
+      socket.emit("getWebcams", {
+        webcams,
+        identifier: data.identifier,
+      });
+    });
+
+    socket.on("screenshotWebcam", async (data: { webcamId: string }) => {
+      const { webcamId } = data;
+      console.log("webcamId", webcamId);
+      const screenshot = await takeScreenshotWebcam(webcamId);
+      console.log("screenshotWebcam", screenshot, data);
+      socket.emit("screenshotWebcam", {
+        screenshot,
+        webcamId,
+      });
+    });
   };
+
   return (
     <WsClientContext.Provider
       value={{ wss, connect, disconnect, connected, file, downloading }}

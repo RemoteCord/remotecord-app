@@ -4,7 +4,7 @@ import { useStoreTauri } from "@/hooks/common";
 import { env } from "@/shared/env.config";
 import { useAuth0 } from "@auth0/auth0-react";
 import { createContext, useContext, useEffect, useState } from "react";
-import { io, type Socket } from "socket.io-client";
+import { type Socket, io } from "socket.io-client";
 import { toast } from "sonner";
 
 interface ControllerConnectionType {
@@ -65,7 +65,9 @@ export const WsApplication: React.FC<{
 
       console.log("authtoken", token);
 
-      const socket = io(`${env.VITE_WS_URL}/application`, {
+      const socket = io(`${env.VITE_API_URL}/application`, {
+        // path: "/api/socket.io",
+        transports: ["websocket"],
         auth: {
           token,
         },
@@ -149,13 +151,14 @@ export const WsApplication: React.FC<{
     void connectWsApplication();
   }, []);
 
-  const handleAcceptFriend = () => {
+  const handleAcceptFriend = (accept: boolean) => {
     // connect(tokenConnection, controllerData.username);
     setOpenModalFriend(false);
 
     wssApplication?.emit("addFriend", {
       controllerid: controllerid,
       token: controllerData.token,
+      accept,
     });
 
     setControllerData({
