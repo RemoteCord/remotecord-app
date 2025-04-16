@@ -14,39 +14,41 @@ const appElement = document.getElementById("app");
 if (!appElement) throw new Error("Root element with id 'app' not found");
 const root = createRoot(appElement);
 
-const update = await check();
+console.log("PROD", import.meta.env.PROD);
 
-console.log("update", update);
+// const update = await check();
 
-if (update) {
-  console.log(
-    `found update ${update.version} from ${update.date} with notes ${update.body}`
-  );
-  let downloaded = 0;
-  let contentLength = 0;
-  // alternatively we could also call update.download() and update.install() separately
-  await update.downloadAndInstall((event) => {
-    switch (event.event) {
-      case "Started":
-        contentLength = event.data.contentLength ?? 0;
-        console.log(
-          `started downloading ${event.data.contentLength ?? 0} bytes`
-        );
-        console.log("a");
-        break;
-      case "Progress":
-        downloaded += event.data.chunkLength;
-        console.log(`downloaded ${downloaded} from ${contentLength}`);
-        break;
-      case "Finished":
-        console.log("download finished");
-        break;
-    }
-  });
+// console.log("update", update);
 
-  console.log("update installed");
-  await relaunch();
-}
+// if (update) {
+//   console.log(
+//     `found update ${update.version} from ${update.date} with notes ${update.body}`
+//   );
+//   let downloaded = 0;
+//   let contentLength = 0;
+//   // alternatively we could also call update.download() and update.install() separately
+//   await update.downloadAndInstall((event) => {
+//     switch (event.event) {
+//       case "Started":
+//         contentLength = event.data.contentLength ?? 0;
+//         console.log(
+//           `started downloading ${event.data.contentLength ?? 0} bytes`
+//         );
+//         console.log("a");
+//         break;
+//       case "Progress":
+//         downloaded += event.data.chunkLength;
+//         console.log(`downloaded ${downloaded} from ${contentLength}`);
+//         break;
+//       case "Finished":
+//         console.log("download finished");
+//         break;
+//     }
+//   });
+
+//   console.log("update installed");
+//   await relaunch();
+// }
 
 root.render(
   // <React.StrictMode>
@@ -55,7 +57,9 @@ root.render(
       domain={CLIENT_DOMAIN}
       clientId={CLIENT_ID}
       authorizationParams={{
-        redirect_uri: "http://localhost:3006/callback",
+        redirect_uri: import.meta.env.PROD
+          ? "http://tauri.localhost/callback"
+          : "http://localhost:3006/callback",
         scope: "openid profile email",
         audience: env.VITE_AUTH0_AUDIENCE,
       }}

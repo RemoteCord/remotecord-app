@@ -22,8 +22,6 @@
     ],
     "security": {
       "headers": {
-        "Cross-Origin-Opener-Policy": "same-origin",
-        "Cross-Origin-Embedder-Policy": "require-corp",
         "Timing-Allow-Origin": [
           "https://developer.mozilla.org",
           "https://example.com",
@@ -37,8 +35,9 @@
       },
       "csp": {
         "default-src": "'self'",
+        "frame-src": "'self' https://*.us.auth0.com",
         "style-src": "'self' 'unsafe-inline' https://fonts.googleapis.com",
-        "connect-src": "ipc: http://ipc.localhost http://tauri.localhost https://*.supabase.co https://*.luqueee.dev wss://*.luqueee.dev",
+        "connect-src": "ipc: http://ipc.localhost http://tauri.localhost https://*.supabase.co https://*.luqueee.dev wss://*.luqueee.dev https://*.remotecord.app wss://*.remotecord.app https://*.us.auth0.com",
         "img-src": "'self' https://cdn.discordapp.com https://lh3.googleusercontent.com https://fonts.googleapis.com",
         "font-src": "'self' https://fonts.gstatic.com"
       }
@@ -59,7 +58,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZBQjlBNTJGNEQ0NzY4M0MKUldROGFFZE5MNlc1K3ZaV2EvV1ZpV2ZjZUJwMXNZTFc1QTdSYkh4YjRtUXVaKzZXTzJuOVhhOUgK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZDNTI0QkYzOTY5MjEyMkMKUldRc0VwS1c4MHRTL0FoTTZQcmN2dFAzVmI4YzlWWUFHSS9saVZncjhsSXVuQ1hBSlhlZ29RZ1EK",
       "dialog": true,
       "active": true,
       "endpoints": [
