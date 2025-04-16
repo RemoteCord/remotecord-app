@@ -54,7 +54,14 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "windows": {}
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "",
+      "wix": {
+        "language": "es-ES"
+      }
+    }
   },
   "plugins": {
     "updater": {
