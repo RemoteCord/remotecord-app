@@ -1,84 +1,85 @@
 "use client";
 import { useApi } from "@/hooks/common/useApi";
-import { useEffect, useState } from "react";
+import { useFriendsStore } from "@/stores/friends/friends.store";
+import { useEffect } from "react";
 
 export interface Friend {
-	name: string;
-	picture: string;
-	controllerid: string;
-	permissions: Permissions;
+  name: string;
+  picture: string;
+  controllerid: string;
+  permissions: Permissions;
 }
 
 export interface Permissions {
-	explorer: boolean;
-	getFile: boolean;
-	process: boolean;
-	screenshot: boolean;
-	shell: boolean;
-	uploadFile: boolean;
+  explorer: boolean;
+  getFile: boolean;
+  process: boolean;
+  screenshot: boolean;
+  shell: boolean;
+  uploadFile: boolean;
 }
 
 export const useFriends = () => {
-	const { request } = useApi();
-	const [friends, setFriends] = useState<Friend[]>([]);
-	const getFriends = async () => {
-		const res = await request<{
-			friends: Friend[];
-		}>("/api/clients/friends", {
-			method: "GET",
-		});
-		console.log("res", res);
+  const { friends, setFriends, deleteFriendFromStore } = useFriendsStore();
 
-		if (!res) return [];
+  const { request } = useApi();
+  const getFriends = async () => {
+    const res = await request<{
+      friends: Friend[];
+    }>("/api/clients/friends", {
+      method: "GET",
+    });
+    console.log("res", res);
 
-		setFriends(res.friends);
-		return res.friends;
-	};
+    if (!res) return [];
 
-	const deleteFriend = async (controllerid: string) => {
-		const res = await request<{ status: boolean }>(
-			`/api/clients/friends/${controllerid}`,
-			{
-				method: "DELETE",
-			},
-		);
-		console.log("res", res);
+    setFriends(res.friends);
+    return res.friends;
+  };
 
-		if (!res) return { status: false };
+  const deleteFriend = async (controllerid: string) => {
+    const res = await request<{ status: boolean }>(
+      `/api/clients/friends/${controllerid}`,
+      {
+        method: "DELETE",
+      }
+    );
+    console.log("res", res);
 
-		setFriends((prev) =>
-			prev.filter((friend) => friend.controllerid !== controllerid),
-		);
-		return res;
+    if (!res) return { status: false };
 
-		// location.reload();
-	};
+    deleteFriendFromStore(controllerid);
 
-	useEffect(() => {
-		console.log("friends hook", friends);
-	}, [friends]);
+    return res;
 
-	const syncPermissions = async (
-		permissions: Permissions,
-		controllerid: string,
-	) => {
-		const res = await request<{ status: boolean }>(
-			"/api/clients/friends/permissions",
-			{
-				method: "POST",
-				body: JSON.stringify({
-					permissions,
-					controllerid,
-				}),
-			},
-		);
-		console.log("res", res);
+    // location.reload();
+  };
 
-		if (!res) return { status: false };
+  useEffect(() => {
+    console.log("friends hook", friends);
+  }, [friends]);
 
-		return res;
-		// location.reload();
-	};
+  const syncPermissions = async (
+    permissions: Permissions,
+    controllerid: string
+  ) => {
+    const res = await request<{ status: boolean }>(
+      "/api/clients/friends/permissions",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          permissions,
+          controllerid,
+        }),
+      }
+    );
+    console.log("res", res);
 
-	return { getFriends, deleteFriend, syncPermissions, friends };
+    if (!res) return { status: false };
+
+    return res;
+    // location.reload();
+  };
+
+  return { getFriends, deleteFriend, syncPermissions, friends };
 };

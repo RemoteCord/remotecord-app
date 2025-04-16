@@ -6,6 +6,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { createContext, useContext, useEffect, useState } from "react";
 import { type Socket, io } from "socket.io-client";
 import { toast } from "sonner";
+import { useFriends } from "../friends/hooks/useFriends";
 
 interface ControllerConnectionType {
   username: string;
@@ -32,6 +33,8 @@ export const WsApplication: React.FC<{
   const [wssApplication, setWssApplication] = useState<Socket | null>(null);
   const { getAccessTokenSilently } = useAuth0();
   const { getRecord } = useStoreTauri();
+
+  const { getFriends } = useFriends();
 
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [openModalFriend, setOpenModalFriend] = useState<boolean>(false);
@@ -160,6 +163,10 @@ export const WsApplication: React.FC<{
       token: controllerData.token,
       accept,
     });
+
+    setTimeout(async () => {
+      await getFriends();
+    }, 1000);
 
     setControllerData({
       username: "",
