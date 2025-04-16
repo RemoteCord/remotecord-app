@@ -32,6 +32,7 @@ if (update) {
         console.log(
           `started downloading ${event.data.contentLength ?? 0} bytes`
         );
+        console.log("a");
         break;
       case "Progress":
         downloaded += event.data.chunkLength;
