@@ -8,9 +8,11 @@ on:
 
 jobs:
   publish-tauri:
-    permissions:
-      contents: write
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-latest]
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
 
