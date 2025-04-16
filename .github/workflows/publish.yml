@@ -44,7 +44,8 @@ jobs:
           VITE_AUTH0_CLIENT_ID: ${{secrets.VITE_AUTH0_CLIENT_ID}}
           VITE_AUTH0_DOMAIN: ${{secrets.VITE_AUTH0_DOMAIN}}
           VITE_AUTH0_AUDIENCE: ${{secrets.VITE_AUTH0_AUDIENCE}}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }},
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: app-v__VERSION__
           releaseName: "App v__VERSION__"
