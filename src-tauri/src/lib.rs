@@ -21,18 +21,18 @@ use image::{DynamicImage, ImageBuffer, Rgb, RgbImage};
 pub fn run() {
     let unlocked: bool = true;
     let mut builder =
-        tauri::Builder::default().plugin(tauri_plugin_updater::Builder::new().build());
-    #[cfg(desktop)]
-    {
-        builder = builder.plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
+        tauri::Builder::default();
+        // .plugin(tauri_plugin_updater::Builder::new().build());
+
+    
+    builder
+        .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
             let _ = app
                 .get_webview_window("main")
                 .expect("no main window")
                 .set_focus();
         }))
-    }
-    builder
-        .plugin(tauri_plugin_os::init())
         // .plugin(prevent_default())
         .plugin(tauri_plugin_upload::init())
         .plugin(tauri_plugin_fs::init())
