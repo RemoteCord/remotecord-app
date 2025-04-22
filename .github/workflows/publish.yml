@@ -15,6 +15,9 @@ jobs:
       release_id: ${{ steps.create-release.outputs.result }}
 
     steps:
+      - name: Print TAURI_SIGNING_PRIVATE_KEY
+        run: echo "${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}"
+
       - uses: actions/checkout@v4
 
       - name: setup node
@@ -53,9 +56,6 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - name: Print TAURI_SIGNING_PRIVATE_KEY
-        run: echo "${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}"
-
       - uses: actions/checkout@v4
 
       - name: setup pnpm
