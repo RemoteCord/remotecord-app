@@ -12,7 +12,6 @@ pub mod screenshot;
 use tauri::{ Manager};
 
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let unlocked: bool = true;
     let mut builder =
