@@ -34,8 +34,8 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag_name: `app-v${process.env.PACKAGE_VERSION}`,
-              name: `Desktop App v${process.env.PACKAGE_VERSION}`,
-              body: 'Take a look at the assets to download and install this app.',
+              name: `Remotecord v${process.env.PACKAGE_VERSION}`,
+              body: '',
               draft: true,
               prerelease: false
             })
@@ -117,6 +117,6 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: process.env.release_id,
-              draft: true,
+              draft: false,
               prerelease: false
             })
