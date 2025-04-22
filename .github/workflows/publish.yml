@@ -8,6 +8,7 @@ on:
 
 jobs:
   publish-tauri:
+    permissions: write-all
     strategy:
       fail-fast: false
       matrix:
@@ -57,10 +58,11 @@ jobs:
           TAURI_KEY_PASSWORD: ""
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
         with:
+          releaseId: ${{ needs.create-release.outputs.release_id }}
           tagName: app-v__VERSION__
-          releaseName: "App v__VERSION__"
-          releaseBody: "See the assets to download this version and install."
+          releaseName: "Remotecord v__VERSION__"
+          releaseBody: "Please download the latest version of Remotecord"
           releaseDraft: true
           prerelease: false
-          includeDebug: true
+          includeDebug: false
           includeRelease: true
