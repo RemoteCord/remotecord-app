@@ -11,13 +11,12 @@ mod keystroke;
 pub mod screenshot;
 use tauri::{ Manager};
 
-
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let unlocked: bool = true;
     let mut builder =
         tauri::Builder::default();
-        // .plugin(tauri_plugin_updater::Builder::new().build());
-
+    
     
     builder
         .plugin(tauri_plugin_os::init())
@@ -28,7 +27,6 @@ pub fn run() {
                 .set_focus();
         }))
         // .plugin(prevent_default())
-        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_upload::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_clipboard_manager::init())
@@ -52,6 +50,9 @@ pub fn run() {
                 tauri_plugin_autostart::MacosLauncher::LaunchAgent,
                 Some(vec!["--flag1", "--flag2"]), /* arbitrary number of args to pass to your app */
             ));
+
+            #[cfg(desktop)]
+            app.handle().plugin(tauri_plugin_updater::Builder::new().build());
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
