@@ -1,23 +1,16 @@
-use std::{
-    fs,
-
-    io::{Read},
-    path::Path,
-};
+use std::{fs, io::Read, path::Path};
 
 use keystroke::start_keystroke_listener;
 use tauri_plugin_http::reqwest;
 mod keystroke;
 pub mod screenshot;
-use tauri::{ Manager};
+use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let unlocked: bool = true;
-    let mut builder =
-        tauri::Builder::default();
-    
-    
+    let mut builder = tauri::Builder::default();
+
     builder
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
@@ -36,6 +29,7 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_system_info::init())
         .plugin(tauri_plugin_shellx::init(unlocked))
+        .plugin(tauri_plugin_persisted_scope::init())
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(
@@ -52,7 +46,8 @@ pub fn run() {
             ));
 
             #[cfg(desktop)]
-            app.handle().plugin(tauri_plugin_updater::Builder::new().build());
+            app.handle()
+                .plugin(tauri_plugin_updater::Builder::new().build());
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
