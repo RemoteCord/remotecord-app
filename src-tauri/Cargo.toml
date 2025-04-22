@@ -42,16 +42,8 @@ base64 = "0.13"
 rdev = { version = "0.5.0", features = ["serde"] }
 tauri-plugin-prevent-default = "1.3"
 
-[dependencies.nokhwa]
-version = "0.10"
-# Use the native input backends, enable WGPU integration
-features = ["input-native", "output-wgpu"]
-
 
 # add this to enable exporting to a JPEG/PNG
-[dependencies.image]
-version = "0.25"
-features = ["default-formats"]
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-autostart = "2"

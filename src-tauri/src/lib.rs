@@ -1,21 +1,16 @@
 use std::{
     fs,
-    fs::File,
-    io::{Read, Seek},
+
+    io::{Read},
     path::Path,
-    time::SystemTime,
 };
 
 use keystroke::start_keystroke_listener;
 use tauri_plugin_http::reqwest;
 mod keystroke;
 pub mod screenshot;
-use tauri::{AppHandle, Manager};
+use tauri::{ Manager};
 
-use base64::encode;
-use image::codecs::png::{CompressionType, FilterType, PngEncoder};
-use image::ImageEncoder;
-use image::{DynamicImage, ImageBuffer, Rgb, RgbImage};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -34,6 +29,7 @@ pub fn run() {
                 .set_focus();
         }))
         // .plugin(prevent_default())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_upload::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_clipboard_manager::init())
