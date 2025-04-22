@@ -15,8 +15,13 @@ jobs:
       release_id: ${{ steps.create-release.outputs.result }}
 
     steps:
-      - name: Print TAURI_SIGNING_PRIVATE_KEY
-        run: echo "${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}"
+      - name: Check if TAURI_SIGNING_PRIVATE_KEY is set
+        run: |
+          if [ -z "${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}" ]; then
+            echo "TAURI_SIGNING_PRIVATE_KEY is NOT set"
+          else
+            echo "TAURI_SIGNING_PRIVATE_KEY is set"
+          fi
 
       - uses: actions/checkout@v4
 
