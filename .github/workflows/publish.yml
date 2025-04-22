@@ -69,18 +69,6 @@ jobs:
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Restore Cargo cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/src-tauri/.cargo/bin/
-            ~/src-tauri/.cargo/registry/index/
-            ~/src-tauri/.cargo/registry/cache/
-            ~/src-tauri/.cargo/git/db/
-            ~/src-tauri/target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('src-tauri/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
-
       - name: install frontend dependencies
         run: pnpm install
 
@@ -91,8 +79,8 @@ jobs:
           VITE_WS_URL: ${{ secrets.VITE_WS_URL }}
           VITE_AUTH0_CLIENT_ID: ${{secrets.VITE_AUTH0_CLIENT_ID}}
           VITE_AUTH0_DOMAIN: ${{secrets.VITE_AUTH0_DOMAIN}}
-          VITE_AUTH0_AUDIENCE: ${{secrets.VITE_AUTH0_AUDIENCE}}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }},
+          VITE_AUTH0_AUDIENCE: ${{secrets.VITE_AUTH0_AUDIENCE}},
+          TAURI_SIGNING_PRIVATE_KEY: dW50cnVzdGVkIGNvbW1lbnQ6IHJzaWduIGVuY3J5cHRlZCBzZWNyZXQga2V5ClJXUlRZMEl5eVpXVm9SMkZGcjEyVXFjd2lCVHRKRUdCWWNZek1waHJYdGpsZVZuWVIxTUFBQkFBQUFBQUFBQUFBQUlBQUFBQTZUOGdYRStSdW1LdTczcjBNU0h1RlZZdXQ2SHJBVHlnVHFqVTZRcUFRQVhzdVkvQUpSZ1kyb0Q4SitMQnZMcGh3TnQyVlJHaDN6UXVEd1hia3hpcldSOTd4U0pockgrZjh2K3BZRW9xTmt5c0NaeDlQcUwyT0VnMVpiRDEzMFR4ejg2bHFTVThCZkE9Cg==,
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
