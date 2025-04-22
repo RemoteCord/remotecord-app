@@ -77,8 +77,59 @@ jobs:
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          # Install previous version of libwebkit2gtk-4.1-dev to avoid issues with the latest version (blank screen)
+          # see: https://github.com/tauri-apps/tauri/issues/11994
+          # see: https://github.com/h3poteto/fedistar/issues/1717
+          sudo apt-get update
+          sudo apt-cache madison libwebkit2gtk-4.1-dev
+          sudo apt-get install -y \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev          
+          mkdir -p /tmp/ubuntu-packages
+          cd /tmp/ubuntu-packages
+          wget https://launchpadlibrarian.net/723972773/libwebkit2gtk-4.1-0_2.44.0-0ubuntu0.22.04.1_amd64.deb
+          wget https://launchpadlibrarian.net/723972761/libwebkit2gtk-4.1-dev_2.44.0-0ubuntu0.22.04.1_amd64.deb
+          wget https://launchpadlibrarian.net/723972770/libjavascriptcoregtk-4.1-0_2.44.0-0ubuntu0.22.04.1_amd64.deb
+          wget https://launchpadlibrarian.net/723972746/libjavascriptcoregtk-4.1-dev_2.44.0-0ubuntu0.22.04.1_amd64.deb
+          wget https://launchpadlibrarian.net/723972735/gir1.2-javascriptcoregtk-4.1_2.44.0-0ubuntu0.22.04.1_amd64.deb
+          wget https://launchpadlibrarian.net/723972739/gir1.2-webkit2-4.1_2.44.0-0ubuntu0.22.04.1_amd64.deb
+          wget https://launchpadlibrarian.net/606433947/libicu70_70.1-2ubuntu1_amd64.deb
+          wget https://launchpadlibrarian.net/606433941/libicu-dev_70.1-2ubuntu1_amd64.deb
+          wget https://launchpadlibrarian.net/606433945/icu-devtools_70.1-2ubuntu1_amd64.deb
+          wget https://launchpadlibrarian.net/595623693/libjpeg8_8c-2ubuntu10_amd64.deb
+          wget https://launchpadlibrarian.net/587202140/libjpeg-turbo8_2.1.2-0ubuntu1_amd64.deb
+          wget https://launchpadlibrarian.net/592959859/xdg-desktop-portal-gtk_1.14.0-1build1_amd64.deb
+          sudo apt-get install -y /tmp/ubuntu-packages/*.deb
+
       - name: install frontend dependencies
         run: pnpm install
+
+      - name: Install Azure Code Signing dependencies
+        if: matrix.platform == 'windows-latest'
+        shell: bash
+        env:
+          # replace Azure credentials before running
+          WINDOWS_SIGN_COMMAND: trusted-signing-cli -e https://weu.codesigning.azure.net/ -a ${{secrets.AZURE_CODE_SIGNING_NAME}} -c ${{secrets.AZURE_CERT_PROFILE_NAME}} -d remotecord %1
+        run: |
+          cd "$GITHUB_WORKSPACE/apps/desktop"
+          cat './src-tauri/tauri.conf.json' | jq '.bundle .windows += {"signCommand": env.WINDOWS_SIGN_COMMAND}' > './src-tauri/temp.json' && mv './src-tauri/temp.json' './src-tauri/tauri.conf.json'
+          curl -L -o "$USERPROFILE/.cargo/bin/trusted-signing-cli.exe" \
+            https://github.com/Levminer/trusted-signing-cli/releases/download/0.5.0/trusted-signing-cli.exe
+
+          # Extract and convert version to Windows/MSI-friendly format
+          RAW_VERSION=$(jq -r .version package.json)
+          WIN_VERSION=$(echo "$RAW_VERSION" | sed 's/[^0-9]/./g' | sed 's/\.\+/\./g' | sed 's/^\.//; s/\.$//')
+          echo "Using Windows-compatible version for MSI: $WIN_VERSION"
+          cat './src-tauri/tauri.conf.json' | jq --arg winver "$WIN_VERSION" '.bundle .windows .wix += { "version": $winver }' > './src-tauri/temp.json' && mv './src-tauri/temp.json' './src-tauri/tauri.conf.json'
 
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -90,6 +141,9 @@ jobs:
           VITE_AUTH0_AUDIENCE: ${{secrets.VITE_AUTH0_AUDIENCE}},
           TAURI_SIGNING_PRIVATE_KEY: "${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}"
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
+          AZURE_TENANT_ID: ${{ matrix.platform == 'windows-latest' && secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ matrix.platform == 'windows-latest' && secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ matrix.platform == 'windows-latest' && secrets.AZURE_CLIENT_SECRET }}
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
           args: ${{ matrix.args }}

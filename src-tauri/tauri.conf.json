@@ -33,14 +33,7 @@
           "key2": "'value3'"
         }
       },
-      "csp": {
-        "default-src": "'self'",
-        "frame-src": "'self' https://*.us.auth0.com",
-        "style-src": "'self' 'unsafe-inline' https://fonts.googleapis.com",
-        "connect-src": "ipc: http://ipc.localhost http://tauri.localhost https://*.supabase.co https://*.luqueee.dev wss://*.luqueee.dev https://*.remotecord.app wss://*.remotecord.app https://*.us.auth0.com",
-        "img-src": "'self' https://cdn.discordapp.com https://lh3.googleusercontent.com https://fonts.googleapis.com",
-        "font-src": "'self' https://fonts.gstatic.com"
-      }
+      "csp": null
     }
   },
   "bundle": {

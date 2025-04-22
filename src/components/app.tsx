@@ -11,48 +11,36 @@ import { Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 // import Router, { Route, type RouterOnChangeArgs } from "preact-router";
 import { Navbar } from "./common/navbar";
+import { useUpdater } from "@/hooks/common/useUpdater";
 
 export function App() {
-	// const handleRoute = async (
-	//   e: RouterOnChangeArgs<Record<string, string | undefined> | null>
-	// ) => {
-	//   console.log("ROUTE", e);
-	//   const path = e.path;
-	//   if (!path) return;
-	//   if (!PROTECTED_ROUTES.includes(path)) return;
-	//   console.log("isAuthenticated", isAuthenticated);
-	//   if (!isAuthenticated) {
-	//     route("/auth", true);
-	//     return;
-	//   }
-	//   // route("/auth", true);
-	// };
+  useUpdater();
 
-	return (
-		// <React.StrictMode>
-		<>
-			<LoggedProvider>
-				<Providers>
-					<WsClient>
-						<main className="h-full w-full">
-							<Navbar />
-							<Suspense fallback={<div>Loading...</div>}>
-								<Routes>
-									<Route path="/" element={<Home />} />
-									<Route path="/logs" element={<Logs />} />
-									{/* <Route path="/" component={Home} /> */}
-									<Route path="/auth" element={<Auth />} />
-									<Route path="/callback" element={<Callback />} />
-								</Routes>
-							</Suspense>
-						</main>
-						<ConnectionModalAnimation />
-					</WsClient>
-				</Providers>
-			</LoggedProvider>
+  return (
+    // <React.StrictMode>
+    <>
+      <LoggedProvider>
+        <Providers>
+          <WsClient>
+            <main className="h-full w-full">
+              <Navbar />
+              <Suspense fallback={<div>Loading...</div>}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/logs" element={<Logs />} />
+                  {/* <Route path="/" component={Home} /> */}
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/callback" element={<Callback />} />
+                </Routes>
+              </Suspense>
+            </main>
+            <ConnectionModalAnimation />
+          </WsClient>
+        </Providers>
+      </LoggedProvider>
 
-			<Toaster />
-		</>
-		// </React.StrictMode>
-	);
+      <Toaster />
+    </>
+    // </React.StrictMode>
+  );
 }
