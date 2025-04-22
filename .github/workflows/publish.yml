@@ -54,7 +54,6 @@ jobs:
           VITE_AUTH0_DOMAIN: ${{secrets.VITE_AUTH0_DOMAIN}}
           VITE_AUTH0_AUDIENCE: ${{secrets.VITE_AUTH0_AUDIENCE}}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }},
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ""
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
         with:
@@ -63,3 +62,5 @@ jobs:
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
           prerelease: false
+          includeDebug: true
+          includeRelease: true
