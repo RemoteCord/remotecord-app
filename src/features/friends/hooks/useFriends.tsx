@@ -28,7 +28,11 @@ export const useFriends = () => {
       friends: Friend[];
     }>("/api/clients/friends", {
       method: "GET",
+    }).catch((err) => {
+      console.log("Error getting friends", err);
+      return null;
     });
+
     console.log("res", res);
 
     if (!res) return [];

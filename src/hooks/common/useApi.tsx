@@ -12,7 +12,7 @@ export const useApi = () => {
     input: URL | Request | string,
     init?: RequestInit & ClientOptions
   ) => {
-    console.log("REQUEST TO", `${env.VITE_API_URL}${input}`);
+    // console.log("REQUEST TO", `${env.VITE_API_URL}${input}`);
     // if (!user) return;
     // if (!isAuthenticated) {
     //   navigator("/auth");
@@ -22,7 +22,7 @@ export const useApi = () => {
     // if (!token) navigator("/auth");
     // const { session } = (await supabase?.auth.getSession())?.data || {};
     // const { token } = auth;
-    console.log("REQUEST TO", `${env.VITE_API_URL}${input}`, init);
+    console.log("REQUEST TO", `${env.VITE_API_URL}${input}`, init, token);
     const headersData = {
       headers: {
         "Content-type": "application/json",
