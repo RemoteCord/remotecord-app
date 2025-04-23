@@ -1,7 +1,6 @@
 import { useSession } from "@/hooks/authentication";
-import { useApi } from "@/hooks/common/useApi";
 import { authStore } from "@/services";
-import React, { useEffect } from "react";
+import React, { useLayoutEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 function useQuery() {
@@ -13,9 +12,8 @@ const Callback = () => {
   const router = useNavigate();
   const query = useQuery();
   const { getUser } = useSession();
-  const { request } = useApi();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // if (!location) return;
 
     async function getUserInfo(token: string) {
@@ -34,6 +32,8 @@ const Callback = () => {
       router("/");
     }
 
+    console.log("query", query);
+
     const token = query.get("token");
 
     if (!token) {
@@ -43,7 +43,7 @@ const Callback = () => {
 
     console.log("params", token);
     void getUserInfo(token as string);
-  }, []);
+  }, [query]);
 
   return (
     <div>
