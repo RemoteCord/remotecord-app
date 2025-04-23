@@ -1,7 +1,7 @@
 // import { useStoreTauri } from "./useStore";
 import { authStore } from "@/services";
 import { env } from "@/shared/env.config";
-import { type ClientOptions, fetch } from "@tauri-apps/plugin-http";
+import type { ClientOptions } from "@tauri-apps/plugin-http";
 import { useNavigate } from "react-router-dom";
 
 export const useApi = () => {
