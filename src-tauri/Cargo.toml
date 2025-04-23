@@ -33,7 +33,7 @@ serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
 tauri = { version = "2.4.1",  features = [
-    "devtools", # Disabled in production
+    #"devtools", # Disabled in production
     "tray-icon",
     "image-png",
     ] }
