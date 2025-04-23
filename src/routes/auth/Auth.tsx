@@ -1,34 +1,77 @@
 import { env } from "@/shared/env.config";
-import { useAuth0 } from "@auth0/auth0-react";
+// import { useGoogleLogin } from "@react-oauth/google";
+import { openUrl } from "@tauri-apps/plugin-opener";
+
+import type { SVGProps } from "react";
+
+const Google = (props: SVGProps<SVGSVGElement>) => (
+  // biome-ignore lint/a11y/noSvgWithoutTitle: <explanation>
+  <svg
+    width="1em"
+    height="1em"
+    viewBox="0 0 256 262"
+    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="xMidYMid"
+    {...props}
+  >
+    <path
+      d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
+      fill="#4285F4"
+    />
+    <path
+      d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"
+      fill="#34A853"
+    />
+    <path
+      d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"
+      fill="#FBBC05"
+    />
+    <path
+      d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
+      fill="#EB4335"
+    />
+  </svg>
+);
 
 const Auth = () => {
-  //   login();
-  const { loginWithRedirect, logout } = useAuth0();
-  const handleLogout = async () => {
-    await logout({
-      logoutParams: {
-        returnTo: import.meta.env.PROD
-          ? "http://tauri.localhost/"
-          : "http://localhost:3006/",
-      },
-      clientId: env.VITE_AUTH0_CLIENT_ID,
-    });
+  const login = async () => {
+    const scope = "openid profile email";
+    const responseType = "code";
+    const state = "your-unique-state"; // Optional but recommended for security
+
+    const oauthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${
+      env.VITE_AUTH_GOOGLE_ID
+    }&redirect_uri=${encodeURIComponent(
+      `${env.VITE_API_URL}/api/auth/callback`
+    )}&response_type=${responseType}&scope=${encodeURIComponent(
+      scope
+    )}&state=${state}`;
+
+    await openUrl(oauthUrl);
   };
+
   return (
     <div className={"flex flex-col items-center justify-center h-full"}>
-      <button
+      {/* <button
         type={"button"}
-        onClick={() => loginWithRedirect()}
+        onClick={() => handleLogin()}
         className={
           "mb-20 px-8 py-4 border-2 rounded-lg text-2xl hover:bg-border transition-all duration-200 font-[300] "
         }
       >
         LOGIN
+      </button> */}
+      <button
+        type="button"
+        onClick={() => login()}
+        className="flex absolute inset-0  m-auto w-fit h-fit gap-4 items-center text-2xl border px-4 py-2 rounded-lg hover:bg-border transition-all duration-200 font-[300]"
+      >
+        <Google /> <span>Signin</span>
       </button>
+
       {/* <button type={"button"} onClick={() => handleLogout()}>
           logout
         </button> */}
-
       {/* <Button variant="default">Default</Button> */}
     </div>
   );

@@ -1,6 +1,6 @@
 import { load } from "@tauri-apps/plugin-store";
 
-type Records = "auth" | "downloadFolder" | "autoaccept" | "sounds";
+type Records = "auth" | "downloadFolder" | "autoaccept" | "sounds" | "token" | "user_data";
 
 export class StoreService {
 	private name: string;
@@ -35,3 +35,6 @@ export class StoreService {
 		await store.clear();
 	};
 }
+
+
+export const authStore = new StoreService("auth");

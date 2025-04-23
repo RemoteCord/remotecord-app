@@ -7,7 +7,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
-import { useAuth } from "@/hooks/authentication";
 import { useUserInfo } from "@/hooks/authentication/useUserInfo";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 // import { Settings } from "lucide-react";
@@ -17,15 +16,18 @@ import { ConfigCard } from "./ConfigCard";
 import { useConnection } from "./hooks/useConnection";
 import { useFolderPicker } from "./hooks/useFolderPicker";
 import { useAutostart } from "@/hooks/common/useAutostart";
+import { useSession } from "@/hooks/authentication";
+import { useState } from "react";
 // import { useConnection } from "@/hooks/useConnection";
 // import { SoundModal } from "../modals/SoundModal";
 
 export const ConfigMenu = () => {
   const { openFolderDialog, folderPath } = useFolderPicker();
+  const { signOut } = useSession();
   const { handleAutoacceptConnection, autoaccept } = useConnection();
-  const { signOut } = useAuth();
   const { username, handleChangeUsername, setUsername } = useUserInfo();
   const { isAutostartEnabled, toggleAutostart } = useAutostart();
+  const [open, setOpen] = useState(false);
   // const { cleanStore, deleteRecord } = useStoreTauri();
 
   // const handleSignOut = async () => {
@@ -34,7 +36,7 @@ export const ConfigMenu = () => {
   // };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className=" hover:bg-zinc-900 bg-secondary  transition-all duration-300 px-2 rounded-lg flex gap-2 items-center hover:cursor-pointer">
         <IconSettingsFilled />
         Config
@@ -94,7 +96,10 @@ export const ConfigMenu = () => {
           <div className="flex flex-col gap-4">
             <button
               type="button"
-              onClick={signOut}
+              onClick={() => {
+                setOpen(false);
+                void signOut();
+              }}
               className="w-full bg-red-900 px-4 py-2 rounded-lg hover:bg-red-900/80 transition-all duration-300"
             >
               Sign out

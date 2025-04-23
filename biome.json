@@ -33,6 +33,9 @@
         "useExhaustiveDependencies": "off",
         "noUnusedImports": "error"
       },
+      "suspicious": {
+        "noExplicitAny": "off"
+      },
       "complexity": {
         "noStaticOnlyClass": "off"
       }

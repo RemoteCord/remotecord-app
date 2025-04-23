@@ -1,7 +1,7 @@
 import { FriendsCard } from "@/features/friends/FriendsCard";
 import { CodeClient } from "@/features/home/components/CodeClient";
 
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
@@ -17,7 +17,7 @@ const Home = () => {
       <div className="w-[95%] mx-auto mt-10">
         <FriendsCard />
       </div>
-      <Link to="/auth">auth</Link>
+      {/* <Link to="/auth">auth</Link> */}
     </div>
   );
 };

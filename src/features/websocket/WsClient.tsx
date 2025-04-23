@@ -1,6 +1,5 @@
 import { useKeyContextProvider } from "@/contexts/KeyContext";
 import { env } from "@/shared/env.config";
-import { useAuth0 } from "@auth0/auth0-react";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { type Socket, io } from "socket.io-client";
 import { toast } from "sonner";
@@ -9,6 +8,7 @@ import { WsApplication } from "./WsApplication";
 import { useWsClient } from "./hooks/useWsClient";
 import { WsService } from "./ws.service";
 import { useWebcams } from "../webcam/hooks/useWebcams";
+import { useSession } from "@/hooks/authentication";
 
 export type Events =
   | "uploadFile"
@@ -47,7 +47,7 @@ export const WsClient: React.FC<{ children: React.ReactNode }> = ({
     useWsClient();
   const [wss, setWss] = useState<Socket | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
-  const { getAccessTokenSilently } = useAuth0();
+  const { token, isLoading } = useSession();
   const { setListening, keys } = useKeyContextProvider();
   const { listWebcams, takeScreenshotWebcam } = useWebcams();
   const keysRef = useRef<string[]>([]);
@@ -79,8 +79,6 @@ export const WsClient: React.FC<{ children: React.ReactNode }> = ({
       console.error("No controllerid id provided to connect function");
       return;
     }
-
-    const token = await getAccessTokenSilently();
 
     console.log("authtoken", token);
 
@@ -140,7 +138,7 @@ export const WsClient: React.FC<{ children: React.ReactNode }> = ({
     socket.on("getFilesFolder", wsService.getFilesFolder);
 
     socket.on("getFileFromClient", (data: WS.GetFileFromClient) =>
-      wsService.getFileFromClient(data, token)
+      wsService.getFileFromClient(data, token as string)
     );
 
     socket.on("getTasksFromClient", wsService.getTasksFromClient);

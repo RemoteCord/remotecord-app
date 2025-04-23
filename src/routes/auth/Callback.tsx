@@ -1,56 +1,55 @@
+import { useSession } from "@/hooks/authentication";
 import { useApi } from "@/hooks/common/useApi";
-import { useAuth0 } from "@auth0/auth0-react";
+import { authStore } from "@/services";
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 function useQuery() {
-	const { search } = useLocation();
-	return React.useMemo(() => new URLSearchParams(search), [search]);
+  const { search } = useLocation();
+  return React.useMemo(() => new URLSearchParams(search), [search]);
 }
 
 const Callback = () => {
-	const router = useNavigate();
-	const query = useQuery();
+  const router = useNavigate();
+  const query = useQuery();
+  const { getUser } = useSession();
+  const { request } = useApi();
 
-	const { request } = useApi();
+  useEffect(() => {
+    // if (!location) return;
 
-	const { getAccessTokenSilently, logout } = useAuth0();
+    async function getUserInfo(token: string) {
+      await authStore.insertRecord("token", token as string);
 
-	useEffect(() => {
-		// if (!location) return;
-		const code = query.get("code");
-		const state = query.get("state");
-		console.log("params", code);
-		if (!code || !state) return;
+      const user_data = await getUser();
 
-		getAccessTokenSilently()
-			.then(async (token: string) => {
-				console.log("token", token);
-				const res = await request<{ status: boolean }>("/api/auth/callback", {
-					method: "POST",
-					body: JSON.stringify({
-						token,
-					}),
-				});
+      if (!user_data) {
+        console.log("no user data found. token not valid");
 
-				console.log("res", res);
-				if (!res?.status) logout();
+        return;
+      }
 
-				router("/");
-			})
-			.catch(() => {
-				console.log("error");
-				logout();
-			});
+      await authStore.insertRecord("user_data", user_data);
+      console.log("user data", user_data);
+      router("/");
+    }
 
-		// console.log("Callback", { code, state });
-	}, []);
+    const token = query.get("token");
 
-	return (
-		<div>
-			<p>aa</p>
-		</div>
-	);
+    if (!token) {
+      console.log("no access token found");
+      return;
+    }
+
+    console.log("params", token);
+    void getUserInfo(token as string);
+  }, []);
+
+  return (
+    <div>
+      <p>aa</p>
+    </div>
+  );
 };
 
 export default Callback;

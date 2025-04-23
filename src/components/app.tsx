@@ -12,6 +12,7 @@ import { Toaster } from "sonner";
 // import Router, { Route, type RouterOnChangeArgs } from "preact-router";
 import { Navbar } from "./common/navbar";
 import { useUpdater } from "@/hooks/common/useUpdater";
+import { DeepLinkProvider } from "@/contexts/DeppLinkProvider";
 
 export function App() {
   useUpdater();
@@ -19,27 +20,29 @@ export function App() {
   return (
     // <React.StrictMode>
     <>
-      <LoggedProvider>
-        <Providers>
-          <WsClient>
-            <main className="h-full w-full">
-              <Navbar />
-              <Suspense fallback={<div>Loading...</div>}>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/logs" element={<Logs />} />
-                  {/* <Route path="/" component={Home} /> */}
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/callback" element={<Callback />} />
-                </Routes>
-              </Suspense>
-            </main>
-            <ConnectionModalAnimation />
-          </WsClient>
-        </Providers>
-      </LoggedProvider>
+      <DeepLinkProvider>
+        <LoggedProvider>
+          <Providers>
+            <WsClient>
+              <main className="h-full w-full relative">
+                <Navbar />
+                <Suspense fallback={<div>Loading...</div>}>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/logs" element={<Logs />} />
+                    {/* <Route path="/" component={Home} /> */}
+                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/callback" element={<Callback />} />
+                  </Routes>
+                </Suspense>
+              </main>
+              <ConnectionModalAnimation />
+            </WsClient>
+          </Providers>
+        </LoggedProvider>
 
-      <Toaster />
+        <Toaster />
+      </DeepLinkProvider>
     </>
     // </React.StrictMode>
   );

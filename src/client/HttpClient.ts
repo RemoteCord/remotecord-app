@@ -88,15 +88,14 @@ class AxiosClient {
   private async customAxios<ResponseJSON>(
     config: AxiosOptions
   ): Promise<ResponseJSON> {
-    const authtoken = await authStore.getRecord("access_token");
 
     // const token = await getSession();
 
-    console.log("token fetch", authtoken);
+    // console.log("token fetch", authtoken);
 
     const headers = {
       "Content-Type": config.headers?.["Content-Type"] || "application/json",
-      Authorization: `Bearer ${authtoken}`,
+      // Authorization: `Bearer ${authtoken}`,
       ...config.headers,
     };
 

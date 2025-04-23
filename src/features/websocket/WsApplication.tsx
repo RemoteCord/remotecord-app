@@ -2,11 +2,11 @@ import { FriendModal } from "@/features/modals/AddFriendModal";
 import { ConnectionModal } from "@/features/modals/ConnectionModal";
 import { useStoreTauri } from "@/hooks/common";
 import { env } from "@/shared/env.config";
-import { useAuth0 } from "@auth0/auth0-react";
 import { createContext, useContext, useEffect, useState } from "react";
 import { type Socket, io } from "socket.io-client";
 import { toast } from "sonner";
 import { useFriends } from "../friends/hooks/useFriends";
+import { useSession } from "@/hooks/authentication";
 
 interface ControllerConnectionType {
   username: string;
@@ -31,9 +31,8 @@ export const WsApplication: React.FC<{
   children: React.ReactNode;
 }> = ({ connect, children }) => {
   const [wssApplication, setWssApplication] = useState<Socket | null>(null);
-  const { getAccessTokenSilently } = useAuth0();
   const { getRecord } = useStoreTauri();
-
+  const { token, isLoading } = useSession();
   const { getFriends } = useFriends();
 
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -64,7 +63,6 @@ export const WsApplication: React.FC<{
   useEffect(() => {
     const connectWsApplication = async () => {
       console.log("Connecting to ws application");
-      const token = await getAccessTokenSilently();
 
       console.log("authtoken", token);
 
@@ -151,8 +149,8 @@ export const WsApplication: React.FC<{
       );
     };
 
-    void connectWsApplication();
-  }, []);
+    if (!isLoading) void connectWsApplication();
+  }, [isLoading]);
 
   const handleAcceptFriend = (accept: boolean) => {
     // connect(tokenConnection, controllerData.username);

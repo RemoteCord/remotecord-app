@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "remotecord",
+  "productName": "RemoteCord",
   "version": "0.1.0",
-  "identifier": "remotecord.app",
+  "identifier": "com.remotecord.app",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:3006",
@@ -36,9 +36,8 @@
       },
       "csp": {
         "default-src": "'self'",
-        "frame-src": "'self' https://*.us.auth0.com",
         "style-src": "'self' 'unsafe-inline' https://fonts.googleapis.com",
-        "connect-src": "ipc: http://ipc.localhost http://tauri.localhost https://*.supabase.co https://*.luqueee.dev wss://*.luqueee.dev https://*.remotecord.app wss://*.remotecord.app https://*.us.auth0.com",
+        "connect-src": "ipc: http://ipc.localhost http://tauri.localhost https://*.luqueee.dev wss://*.luqueee.dev https://*.remotecord.app wss://*.remotecord.app",
         "img-src": "'self' https://cdn.discordapp.com https://lh3.googleusercontent.com https://fonts.googleapis.com",
         "font-src": "'self' https://fonts.gstatic.com"
       }
