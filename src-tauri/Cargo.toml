@@ -42,11 +42,14 @@ base64 = "0.13"
 rdev = { version = "0.5.0", features = ["serde"] }
 tauri-plugin-prevent-default = "1.3"
 tauri-plugin-persisted-scope = "2"
-
-
-# add this to enable exporting to a JPEG/PNG
+tauri-plugin-deep-link = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-stronghold = "2"
+argon2 = "0.5"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-autostart = "2"
-tauri-plugin-single-instance = "2"
 tauri-plugin-updater = "2"
+
+[target."cfg(any(target_os = \"macos\", windows, target_os = \"linux\"))".dependencies]
+tauri-plugin-single-instance = { version = "2.0.0", features = ["deep-link"] }

@@ -1,6 +1,7 @@
 use std::{fs, io::Read, path::Path};
 
 use keystroke::start_keystroke_listener;
+use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_http::reqwest;
 mod keystroke;
 pub mod screenshot;
@@ -9,16 +10,34 @@ use tauri::Manager;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let unlocked: bool = true;
-    let mut builder = tauri::Builder::default();
+    let mut builder = tauri::Builder::default()
+    .plugin(
+            tauri_plugin_stronghold::Builder::new(|password| {
+                // Hash the password here with e.g. argon2, blake2b or any other secure algorithm
+                // Here is an example implementation using the `rust-argon2` crate for hashing the password
+                use argon2::{Argon2, PasswordHasher};
+                use argon2::password_hash::{SaltString, PasswordHasher as _};
+
+                let salt = SaltString::b64_encode("your-salt".as_bytes()).expect("invalid salt");
+                let argon2 = Argon2::default();
+                let hash = argon2.hash_password(password.as_ref(), &salt).expect("failed to hash password");
+                hash.hash.unwrap().as_bytes().to_vec()
+            })
+            .build(),
+        )
+        .plugin(tauri_plugin_opener::init());
+
+    #[cfg(desktop)]
+    {
+        builder = builder.plugin(tauri_plugin_single_instance::init(|_app, argv, _cwd| {
+          println!("a new app instance was opened with {argv:?} and the deep link event was already triggered");
+          // when defining deep link schemes at runtime, you must also check `argv` here
+        }));
+    }
 
     builder
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_os::init())
-        .plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
-            let _ = app
-                .get_webview_window("main")
-                .expect("no main window")
-                .set_focus();
-        }))
         // .plugin(prevent_default())
         .plugin(tauri_plugin_upload::init())
         .plugin(tauri_plugin_fs::init())
@@ -48,6 +67,16 @@ pub fn run() {
             #[cfg(desktop)]
             app.handle()
                 .plugin(tauri_plugin_updater::Builder::new().build());
+
+            #[cfg(desktop)]
+            app.deep_link().register("remotecord")?;
+
+            #[cfg(any(target_os = "linux", all(debug_assertions, windows)))]
+            {
+                use tauri_plugin_deep_link::DeepLinkExt;
+                app.deep_link().register_all()?;
+            }
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

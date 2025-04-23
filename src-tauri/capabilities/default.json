@@ -23,7 +23,11 @@
         },
         {
           "url": "https://*.remotecord.app"
-        }
+        },
+        {
+          "url": "https://*.us.auth0.com"
+        },
+        { "url": "https://*.tauri.app" }
       ],
       "deny": [
         {
@@ -87,6 +91,9 @@
     "updater:allow-check",
     "updater:allow-download",
     "updater:allow-install",
-    "updater:allow-download-and-install"
+    "updater:allow-download-and-install",
+    "deep-link:default",
+    "opener:default",
+    "stronghold:default"
   ]
 }
