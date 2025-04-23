@@ -1,13 +1,14 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "remotecord",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "identifier": "remotecord.app",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:3006",
     "beforeDevCommand": "pnpm dev",
-    "beforeBuildCommand": "pnpm build"
+    "beforeBuildCommand": "pnpm build",
+    "removeUnusedCommands": true
   },
   "app": {
     "windows": [

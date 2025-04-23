@@ -11,10 +11,10 @@ import { Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 // import Router, { Route, type RouterOnChangeArgs } from "preact-router";
 import { Navbar } from "./common/navbar";
-// import { useUpdater } from "@/hooks/common/useUpdater";
+import { useUpdater } from "@/hooks/common/useUpdater";
 
 export function App() {
-  // useUpdater();
+  useUpdater();
 
   return (
     // <React.StrictMode>
