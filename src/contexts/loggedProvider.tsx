@@ -1,4 +1,5 @@
 import { useSession } from "@/hooks/authentication";
+import { authStore } from "@/services";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -11,10 +12,17 @@ export const LoggedProvider: React.FC<{
   const location = useLocation();
   const navigator = useNavigate();
   useEffect(() => {
-    void checkAuthentication().then(() => {
+    void checkAuthentication().then(async () => {
       if (isLoading) return;
 
-      console.log("location", { isLoading, location, isAuthenticated });
+      const authItems = await authStore.getAllRecords();
+
+      console.log("location", {
+        isLoading,
+        location,
+        isAuthenticated,
+        authItems,
+      });
       const path = location.pathname;
 
       if (!PROTECTED_ROUTES.includes(path)) return;

@@ -34,6 +34,9 @@ export const useApi = () => {
 
     const response = await fetch(`${env.VITE_API_URL}${input}`, headersData);
     const res = await response.json();
+
+    console.log("RESPONSE", res);
+
     return res as T;
   };
   return { request };

@@ -33,7 +33,7 @@ export const useFriends = () => {
       return null;
     });
 
-    console.log("res", res);
+    console.log("res friends", res);
 
     if (!res) return [];
 
