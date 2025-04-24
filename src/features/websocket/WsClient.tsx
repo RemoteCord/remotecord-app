@@ -9,6 +9,7 @@ import { useWsClient } from "./hooks/useWsClient";
 import { WsService } from "./ws.service";
 import { useWebcams } from "../webcam/hooks/useWebcams";
 import { useSession } from "@/hooks/authentication";
+import { useSoundsStore } from "@/stores/sounds.store";
 
 export type Events =
   | "uploadFile"
@@ -51,7 +52,7 @@ export const WsClient: React.FC<{ children: React.ReactNode }> = ({
   const { setListening, keys } = useKeyContextProvider();
   const { listWebcams, takeScreenshotWebcam } = useWebcams();
   const keysRef = useRef<string[]>([]);
-
+  const { setCommandRecivedPlay } = useSoundsStore((state) => state);
   // Update the ref whenever keys changes
   useEffect(() => {
     keysRef.current = keys;
@@ -171,6 +172,8 @@ export const WsClient: React.FC<{ children: React.ReactNode }> = ({
       //   refSoundSkype.current?.howler.stop();
       //   refSoundSkype.current?.howler.seek(0);
       // }, 500);
+
+      setCommandRecivedPlay(true);
 
       toast(`Command ran: ${eventName}`);
     });

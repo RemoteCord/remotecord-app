@@ -7,6 +7,7 @@ import { type Socket, io } from "socket.io-client";
 import { toast } from "sonner";
 import { useFriends } from "../friends/hooks/useFriends";
 import { useSession } from "@/hooks/authentication";
+import { useSoundsStore } from "@/stores/sounds.store";
 
 interface ControllerConnectionType {
   username: string;
@@ -34,7 +35,9 @@ export const WsApplication: React.FC<{
   const { getRecord } = useStoreTauri();
   const { token, isLoading } = useSession();
   const { getFriends } = useFriends();
-
+  const { setCallRequestPlay, setCallJoinPlay } = useSoundsStore(
+    (state) => state
+  );
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [openModalFriend, setOpenModalFriend] = useState<boolean>(false);
 
@@ -141,8 +144,12 @@ export const WsApplication: React.FC<{
               controller.username,
               identifier
             );
+
+            setCallJoinPlay(true);
+
             return;
           }
+          setCallRequestPlay(true);
 
           setOpenModal(true);
         }
@@ -173,7 +180,13 @@ export const WsApplication: React.FC<{
     });
   };
 
-  const handleAcceptConnection = () => {
+  const handleAcceptConnection = (value = true) => {
+    if (!value) {
+      setCallRequestPlay(false);
+      setOpenModal(false);
+      return;
+    }
+
     if (tokenConnection && controllerConnection) {
       connect(
         controllerConnection.controllerid,
@@ -186,6 +199,9 @@ export const WsApplication: React.FC<{
         avatar: "",
         token: "",
       });
+
+      setCallRequestPlay(false);
+      setCallJoinPlay(true);
 
       // setTimeout(() => {
       //   setPlayingJoin(true);

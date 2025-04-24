@@ -1,6 +1,6 @@
 "use client";
 import { useApi } from "@/hooks/common/useApi";
-import { useFriendsStore } from "@/stores/friends/friends.store";
+import { useFriendsStore } from "@/stores/friends.store";
 import { useEffect } from "react";
 
 export interface Friend {

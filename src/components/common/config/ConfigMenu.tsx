@@ -18,6 +18,7 @@ import { useFolderPicker } from "./hooks/useFolderPicker";
 import { useAutostart } from "@/hooks/common/useAutostart";
 import { useSession } from "@/hooks/authentication";
 import { useState } from "react";
+import { SoundModal } from "@/features/sounds/components/SoundModal";
 // import { useConnection } from "@/hooks/useConnection";
 // import { SoundModal } from "../modals/SoundModal";
 
@@ -87,11 +88,9 @@ export const ConfigMenu = () => {
                 <p>{folderPath}</p>
               </div>
             </ConfigCard>
-            {/*<div>
+            <div>
               <SoundModal />
             </div>
-          </div>
-           */}
           </div>
           <div className="flex flex-col gap-4">
             <button

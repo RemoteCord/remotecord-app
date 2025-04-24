@@ -1,11 +1,13 @@
 import { FriendsCard } from "@/features/friends/FriendsCard";
 import { CodeClient } from "@/features/home/components/CodeClient";
+import { Sounds } from "@/features/sounds/components/Sounds";
 
 // import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
     <div className={"overflow-hidden pt-8"}>
+      <Sounds />
       {/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
       <video
         id="camera"
