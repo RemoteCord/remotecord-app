@@ -1,12 +1,39 @@
 export const useWebcams = () => {
+  const requestPermission = async () => {
+    try {
+      const localMediaStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+      });
+
+      console.log("localMediaStream", localMediaStream);
+
+      const video = document.querySelector("camera") as HTMLVideoElement | null;
+      if (video) {
+        video.srcObject = localMediaStream;
+        video.onloadedmetadata = (e) => {
+          console.log("Video metadata loaded");
+          // Do something with the video here.
+        };
+      }
+    } catch (err) {
+      // Handle permission denied or other errors
+      console.error("getUserMedia error:", err);
+    }
+  };
+
   const listWebcams = async () => {
     try {
+      // Modern getUserMedia usage
+
       const webcams = (await navigator.mediaDevices.enumerateDevices())
-        .map((device) => ({
-          id: device.deviceId,
-          name: device.label,
-          type: device.kind,
-        }))
+        .map((device) => {
+          console.log("device", device);
+          return {
+            id: device.deviceId,
+            name: device.label,
+            type: device.kind,
+          };
+        })
         .filter(
           (device) =>
             device.type !== "audioinput" && device.type !== "audiooutput"
@@ -79,5 +106,6 @@ export const useWebcams = () => {
     listWebcams,
     setupCamera,
     takeScreenshotWebcam,
+    requestPermission,
   };
 };

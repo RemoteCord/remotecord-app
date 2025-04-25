@@ -1,3 +1,4 @@
+import { DefaultConfig } from "@/components/config/DefaultConfig";
 import { FriendsCard } from "@/features/friends/FriendsCard";
 import { CodeClient } from "@/features/home/components/CodeClient";
 import { Sounds } from "@/features/sounds/components/Sounds";
@@ -9,6 +10,7 @@ const Home = () => {
   return (
     <div className={"overflow-hidden pt-8"}>
       <Sounds />
+      <DefaultConfig />
       {/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
       <video
         id="camera"
