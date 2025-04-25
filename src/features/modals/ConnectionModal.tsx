@@ -24,7 +24,7 @@ export const ConnectionModal = ({
 }) => {
   return (
     <Dialog open={openModal} onOpenChange={setOpenModal}>
-      <DialogContent>
+      <DialogContent className="w-[600px]">
         <DialogHeader className="flex flex-col gap-4">
           <DialogTitle className="flex gap-4 items-center">
             <span>

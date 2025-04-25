@@ -2,9 +2,11 @@
 import { useApi } from "@/hooks/common/useApi";
 import { useDebouncedSync } from "@/hooks/common/useDebounceSync";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const useUserInfo = () => {
   const { request } = useApi();
+  const navigator = useNavigate();
   const [username, setUsername] = useState<string>("");
   useEffect(() => {
     request<{ username: string }>("/api/clients/user-info").then((res) => {

@@ -7,7 +7,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { Dispatch, SetStateAction } from "react";
-
 export const FriendModal = ({
   openModal,
   controllerData,
@@ -17,20 +16,20 @@ export const FriendModal = ({
   openModal: boolean;
   controllerData: {
     username: string;
-    avatar: string;
+    picture: string;
   };
   handleAcceptFriend: (accept: boolean) => void;
   setOpenModal: Dispatch<SetStateAction<boolean>>;
 }) => {
   return (
     <Dialog open={openModal} onOpenChange={setOpenModal}>
-      <DialogContent>
+      <DialogContent className="w-[600px]">
         <DialogHeader className="flex flex-col gap-4">
           <DialogTitle className="flex gap-4 items-center">
             <span>
-              {controllerData?.avatar && (
+              {controllerData?.picture && (
                 <img
-                  src={controllerData?.avatar}
+                  src={controllerData?.picture}
                   alt="avatar"
                   width={50}
                   height={50}

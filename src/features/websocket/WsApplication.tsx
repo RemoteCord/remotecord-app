@@ -43,11 +43,11 @@ export const WsApplication: React.FC<{
 
   const [controllerData, setControllerData] = useState<{
     username: string;
-    avatar: string;
+    picture: string;
     token: string;
   }>({
     username: "",
-    avatar: "",
+    picture: "",
     token: "",
   });
 
@@ -97,16 +97,16 @@ export const WsApplication: React.FC<{
         (data: {
           clientid: string;
           username: string;
-          avatar: string;
+          picture: string;
           controllerid: string;
           token: string;
         }) => {
-          const { clientid, username, avatar, controllerid, token } = data;
+          const { clientid, username, picture, controllerid, token } = data;
           console.log("addFriend", data);
           setControllerid(controllerid);
           setControllerData({
             username,
-            avatar,
+            picture,
             token,
           });
           setOpenModalFriend(true);
@@ -175,7 +175,7 @@ export const WsApplication: React.FC<{
 
     setControllerData({
       username: "",
-      avatar: "",
+      picture: "",
       token: "",
     });
   };
@@ -196,7 +196,7 @@ export const WsApplication: React.FC<{
       );
       setControllerData({
         username: "",
-        avatar: "",
+        picture: "",
         token: "",
       });
 

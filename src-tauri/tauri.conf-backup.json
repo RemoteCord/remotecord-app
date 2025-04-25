@@ -1,13 +1,14 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "remotecord",
+  "productName": "RemoteCord",
   "version": "0.1.0",
-  "identifier": "remotecord.app",
+  "identifier": "com.remotecord.app",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:3006",
     "beforeDevCommand": "pnpm dev",
-    "beforeBuildCommand": "pnpm build"
+    "beforeBuildCommand": "pnpm build",
+    "removeUnusedCommands": true
   },
   "app": {
     "windows": [
@@ -35,9 +36,8 @@
       },
       "csp": {
         "default-src": "'self'",
-        "frame-src": "'self' https://*.us.auth0.com",
         "style-src": "'self' 'unsafe-inline' https://fonts.googleapis.com",
-        "connect-src": "ipc: http://ipc.localhost http://tauri.localhost https://*.supabase.co https://*.luqueee.dev wss://*.luqueee.dev https://*.remotecord.app wss://*.remotecord.app https://*.us.auth0.com",
+        "connect-src": "ipc: http://ipc.localhost http://tauri.localhost https://*.luqueee.dev wss://*.luqueee.dev https://*.remotecord.app wss://*.remotecord.app",
         "img-src": "'self' https://cdn.discordapp.com https://lh3.googleusercontent.com https://fonts.googleapis.com",
         "font-src": "'self' https://fonts.gstatic.com"
       }
@@ -55,11 +55,8 @@
       "icons/icon.ico"
     ],
     "windows": {
-      "certificateThumbprint": null,
-      "digestAlgorithm": "sha256",
-      "timestampUrl": "",
-      "wix": {
-        "language": "es-ES"
+      "nsis": {
+        "installerHooks": "./windows/hooks.nsi"
       }
     }
   },
@@ -69,9 +66,13 @@
       "dialog": true,
       "active": true,
       "endpoints": [
-        "https://tauri-update-server.luqueee2007.workers.dev/v1/{{target}}/{{arch}}/{{current_version}}",
-        "https://tauri-update-server.luqueee2007.workers.dev/{{target}}/{{current_version}}"
+        "https://github.com/remotecord/remotecord-app/releases/latest/download/latest.json"
       ]
+    },
+    "deep-link": {
+      "desktop": {
+        "schemes": ["remotecord"]
+      }
     }
   }
 }

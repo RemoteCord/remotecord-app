@@ -77,7 +77,7 @@ export const useFriends = () => {
         }),
       }
     );
-    console.log("res", res);
+    console.log("res update controller permissions", res);
 
     if (!res) return { status: false };
 

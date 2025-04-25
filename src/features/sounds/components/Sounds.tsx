@@ -1,7 +1,6 @@
 import { useSoundsStore } from "@/stores/sounds.store";
 import { useEffect, useRef, useState } from "react";
 import ReactHowler from "react-howler";
-import { useVolumes } from "../hooks/useVolumes";
 
 export const Sounds = () => {
   const {
@@ -15,23 +14,15 @@ export const Sounds = () => {
   const [playRequest, setPlayRequest] = useState(false);
   const [playJoin, setPlayingJoin] = useState(false);
   const [playMessageSound, setPlayMessageSound] = useState(false);
-  const { volumes } = useVolumes();
+  const { volumes } = useSoundsStore((state) => state);
   const refSoundRequest = useRef<ReactHowler>(null);
   const refSoundJoin = useRef<ReactHowler>(null);
   const refSoundMessageRecived = useRef<ReactHowler>(null);
 
   useEffect(() => {
-    console.log("volumes sound component", volumes);
-    refSoundRequest.current?.howler.volume(volumes.callRequest);
-    refSoundJoin.current?.howler.volume(volumes.callJoin);
-    refSoundMessageRecived.current?.howler.volume(volumes.commandRecived);
-  }, [volumes]);
-
-  useEffect(() => {
     console.log("callRequest", callRequestPlay);
     if (callRequestPlay) {
       refSoundRequest.current?.seek(0);
-      refSoundRequest.current?.howler.volume(1);
       refSoundRequest.current?.howler.play();
       setPlayRequest(true);
     } else {
@@ -83,18 +74,21 @@ export const Sounds = () => {
       <ReactHowler
         playing={playRequest}
         ref={refSoundRequest}
+        volume={volumes.callRequest / 100}
         src={["/sounds/call-request.mp3"]}
         html5={true}
       />
       <ReactHowler
         playing={playJoin}
         ref={refSoundJoin}
+        volume={volumes.callJoin / 100}
         src={["/sounds/call-join.mp3"]}
         html5={true}
       />
       <ReactHowler
         playing={playMessageSound}
         ref={refSoundMessageRecived}
+        volume={volumes.commandRecived / 100}
         src={["/sounds/message-sound.mp3"]}
         html5={true}
       />

@@ -11,16 +11,19 @@ use tauri::Manager;
 pub fn run() {
     let unlocked: bool = true;
     let mut builder = tauri::Builder::default()
-    .plugin(
+        .plugin(tauri_plugin_process::init())
+        .plugin(
             tauri_plugin_stronghold::Builder::new(|password| {
                 // Hash the password here with e.g. argon2, blake2b or any other secure algorithm
                 // Here is an example implementation using the `rust-argon2` crate for hashing the password
+                use argon2::password_hash::{PasswordHasher as _, SaltString};
                 use argon2::{Argon2, PasswordHasher};
-                use argon2::password_hash::{SaltString, PasswordHasher as _};
 
                 let salt = SaltString::b64_encode("your-salt".as_bytes()).expect("invalid salt");
                 let argon2 = Argon2::default();
-                let hash = argon2.hash_password(password.as_ref(), &salt).expect("failed to hash password");
+                let hash = argon2
+                    .hash_password(password.as_ref(), &salt)
+                    .expect("failed to hash password");
                 hash.hash.unwrap().as_bytes().to_vec()
             })
             .build(),
@@ -64,9 +67,9 @@ pub fn run() {
                 Some(vec!["--flag1", "--flag2"]), /* arbitrary number of args to pass to your app */
             ));
 
-            #[cfg(desktop)]
-            app.handle()
-                .plugin(tauri_plugin_updater::Builder::new().build());
+            // #[cfg(desktop)]
+            // app.handle()
+            //     .plugin(tauri_plugin_updater::Builder::new().build());
 
             #[cfg(desktop)]
             app.deep_link().register("remotecord")?;
@@ -90,16 +93,16 @@ pub fn run() {
 
 #[cfg(debug_assertions)]
 fn prevent_default() -> tauri::plugin::TauriPlugin<tauri::Wry> {
-  use tauri_plugin_prevent_default::Flags;
+    use tauri_plugin_prevent_default::Flags;
 
-  tauri_plugin_prevent_default::Builder::new()
-    .with_flags(Flags::all().difference(Flags::DEV_TOOLS | Flags::RELOAD))
-    .build()
+    tauri_plugin_prevent_default::Builder::new()
+        .with_flags(Flags::all().difference(Flags::DEV_TOOLS | Flags::RELOAD))
+        .build()
 }
 
 #[cfg(not(debug_assertions))]
 fn prevent_default() -> tauri::plugin::TauriPlugin<tauri::Wry> {
-  tauri_plugin_prevent_default::init()
+    tauri_plugin_prevent_default::init()
 }
 
 #[tauri::command]

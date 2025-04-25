@@ -1,6 +1,7 @@
 import { useSession } from "@/hooks/authentication";
 import { authStore } from "@/services";
-import React, { useLayoutEffect } from "react";
+import { relaunch } from "@tauri-apps/plugin-process";
+import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 function useQuery() {
@@ -8,12 +9,14 @@ function useQuery() {
   return React.useMemo(() => new URLSearchParams(search), [search]);
 }
 
+const NODE_ENV = import.meta.env.MODE;
+
 const Callback = () => {
-  const router = useNavigate();
+  const navigator = useNavigate();
   const query = useQuery();
   const { getUser } = useSession();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     // if (!location) return;
 
     async function getUserInfo(token: string) {
@@ -28,8 +31,12 @@ const Callback = () => {
       }
 
       await authStore.insertRecord("user_data", user_data);
-      console.log("user data", user_data);
-      router("/");
+      console.log("user data", user_data, NODE_ENV);
+      if (NODE_ENV === "development") {
+        navigator("/");
+      } else {
+        await relaunch();
+      }
     }
 
     console.log("query", query);

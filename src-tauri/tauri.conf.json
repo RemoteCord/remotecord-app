@@ -39,13 +39,13 @@
         "style-src": "'self' 'unsafe-inline' https://fonts.googleapis.com",
         "connect-src": "ipc: http://ipc.localhost http://tauri.localhost https://*.luqueee.dev wss://*.luqueee.dev https://*.remotecord.app wss://*.remotecord.app",
         "img-src": "'self' https://cdn.discordapp.com https://lh3.googleusercontent.com https://fonts.googleapis.com",
-        "font-src": "'self' https://fonts.gstatic.com"
+        "font-src": "'self' https://fonts.gstatic.com",
+        "media-src": "'self' data:"
       }
     }
   },
   "bundle": {
     "active": true,
-    "createUpdaterArtifacts": true,
     "targets": "nsis",
     "icon": [
       "icons/32x32.png",
@@ -53,17 +53,14 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "perMachine"
+      }
+    }
   },
   "plugins": {
-    "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZDNTI0QkYzOTY5MjEyMkMKUldRc0VwS1c4MHRTL0FoTTZQcmN2dFAzVmI4YzlWWUFHSS9saVZncjhsSXVuQ1hBSlhlZ29RZ1EK",
-      "dialog": true,
-      "active": true,
-      "endpoints": [
-        "https://github.com/remotecord/remotecord-app/releases/latest/download/latest.json"
-      ]
-    },
     "deep-link": {
       "desktop": {
         "schemes": ["remotecord"]

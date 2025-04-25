@@ -37,6 +37,7 @@ export const useSession = () => {
 
     if (!token) {
       console.log("no access token found");
+      await navigator("/auth");
       return;
     }
 

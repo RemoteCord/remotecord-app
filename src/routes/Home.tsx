@@ -1,6 +1,7 @@
 import { FriendsCard } from "@/features/friends/FriendsCard";
 import { CodeClient } from "@/features/home/components/CodeClient";
 import { Sounds } from "@/features/sounds/components/Sounds";
+// import { Link } from "react-router-dom";
 
 // import { Link } from "react-router-dom";
 
@@ -19,7 +20,7 @@ const Home = () => {
       <div className="w-[95%] mx-auto mt-10">
         <FriendsCard />
       </div>
-      {/* <Link to="/auth">auth</Link> */}
+      {/* <Link to="/update">update</Link> */}
     </div>
   );
 };

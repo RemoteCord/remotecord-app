@@ -33,7 +33,7 @@ serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
 tauri = { version = "2.4.1",  features = [
-    #"devtools", # Disabled in production
+    "devtools", # Disabled in production
     "tray-icon",
     "image-png",
     ] }
@@ -57,6 +57,7 @@ tauri-plugin-deep-link = "2"
 tauri-plugin-opener = "2"
 tauri-plugin-stronghold = "2"
 argon2 = "0.5"
+tauri-plugin-process = "2"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-autostart = "2"
