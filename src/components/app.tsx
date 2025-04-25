@@ -1,5 +1,5 @@
 import { Providers } from "@/contexts/Providers";
-import { LoggedProvider } from "@/contexts/LoggedProvider";
+import { LoggedProvider } from "@/contexts/loggedProvider";
 import { ConnectionModalAnimation } from "@/features/modals/ConnectedModal/ConnectionModalAnimation";
 import { WsClient } from "@/features/websocket/WsClient";
 import Home from "@/routes/Home";

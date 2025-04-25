@@ -2,7 +2,7 @@ import { IconArticleFilled, IconHomeFilled } from "@tabler/icons-react";
 import { Link, useLocation } from "react-router-dom";
 import { ConfigMenu } from "../config/ConfigMenu";
 import { TitleBar } from "./TitleBar";
-import { PROTECTED_ROUTES } from "@/contexts/LoggedProvider";
+import { PROTECTED_ROUTES } from "@/contexts/loggedProvider";
 
 const items = [
   {
