@@ -6,6 +6,12 @@ use tauri_plugin_http::reqwest;
 mod keystroke;
 pub mod screenshot;
 use tauri::Manager;
+use reqwest::Client;
+use tokio::io::AsyncWriteExt;
+use futures_util::StreamExt;
+use std::time::{Instant, Duration};
+
+
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -85,7 +91,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             open_file,
             screenshot::capture,
-            screenshot::get_screens
+            screenshot::get_screens,
+            fetch_and_save
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -104,6 +111,46 @@ fn prevent_default() -> tauri::plugin::TauriPlugin<tauri::Wry> {
 fn prevent_default() -> tauri::plugin::TauriPlugin<tauri::Wry> {
     tauri_plugin_prevent_default::init()
 }
+#[tauri::command]
+async fn fetch_and_save(url: String, output: String) -> Result<(), String> {
+    let client = Client::new();
+    let resp = client.get(&url).send().await.map_err(|e| e.to_string())?;
+
+    if !resp.status().is_success() {
+        return Err(format!("Download failed with status: {}", resp.status()));
+    }
+
+    let total_size = resp.content_length().unwrap_or(0);
+    let mut file = tokio::fs::File::create(&output).await.map_err(|e| e.to_string())?;
+    let mut stream = resp.bytes_stream();
+
+    let mut downloaded: u64 = 0;
+    let mut last_logged = Instant::now();
+
+    println!("Starting download: {} bytes", total_size);
+
+    while let Some(chunk) = stream.next().await {
+        let chunk = chunk.map_err(|e| e.to_string())?;
+        file.write_all(&chunk).await.map_err(|e| e.to_string())?;
+        downloaded += chunk.len() as u64;
+
+        // Log progress every 500 ms or on completion
+        if last_logged.elapsed() > Duration::from_millis(500) || downloaded == total_size {
+            if total_size > 0 {
+                let progress = downloaded as f64 / total_size as f64 * 100.0;
+                println!("Downloaded {:.2}% ({}/{} bytes)", progress, downloaded, total_size);
+            } else {
+                println!("Downloaded {} bytes", downloaded);
+            }
+            last_logged = Instant::now();
+        }
+    }
+
+    println!("Download finished successfully.");
+
+    Ok(())
+}
+
 
 #[tauri::command]
 async fn open_file(path: String, token: String, apiurl: String) -> Result<String, String> {

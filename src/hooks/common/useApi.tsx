@@ -23,7 +23,7 @@ export const useApi = () => {
       // if (!token) navigator("/auth");
       // const { session } = (await supabase?.auth.getSession())?.data || {};
       // const { token } = auth;
-      console.log("REQUEST TO", `${env.VITE_API_URL}${input}`, init, token);
+      console.log("REQUEST TO", `${env.VITE_API_URL}${input}`, init);
       const headersData = {
         headers: {
           "Content-type": "application/json",

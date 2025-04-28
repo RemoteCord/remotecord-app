@@ -14,6 +14,7 @@ import { Navbar } from "./common/navbar";
 // import { useUpdater } from "@/hooks/common/useUpdater";
 import { DeepLinkProvider } from "@/contexts/DeppLinkProvider";
 import Update from "@/routes/update/Update";
+import Config from "@/routes/Config";
 
 const GroupProtectedRoutes = () => {
   return (
@@ -50,6 +51,7 @@ export function App() {
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/callback" element={<Callback />} />
                   <Route path="/update" element={<Update />} />
+                  <Route path="/config" element={<Config />} />
                 </Routes>
               </Suspense>
             </main>

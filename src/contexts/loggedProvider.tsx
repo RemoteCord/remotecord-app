@@ -1,7 +1,8 @@
 import { useSession } from "@/hooks/authentication";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUpdate } from "@/hooks/common/useUpdate";
+import { useFolderPicker } from "@/components/common/config/hooks/useFolderPicker";
 
 export const PROTECTED_ROUTES = ["/", "/logs"];
 
@@ -9,6 +10,8 @@ export const LoggedProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const { isAuthenticated, isLoading, checkAuthentication } = useSession();
+  const [firstLoad, setFirstLoad] = useState(true);
+  const { folderPath, loading: LoadingFolder } = useFolderPicker();
   const {
     loading: loadingUpdateRequest,
     currentVersion,
@@ -20,6 +23,15 @@ export const LoggedProvider: React.FC<{
   useEffect(() => {
     const path = location.pathname;
     if (loadingUpdateRequest) return;
+    if (LoadingFolder) return;
+
+    if (firstLoad) {
+      console.log("firstLoad", { folderPath });
+      if (!folderPath) {
+        navigator("/config");
+        setFirstLoad(false);
+      }
+    }
 
     // Only redirect to /update if currentVersion is less than latestVersion
     if (
@@ -46,6 +58,7 @@ export const LoggedProvider: React.FC<{
     location.pathname,
     currentVersion,
     latestVersion,
+    LoadingFolder,
     navigator,
   ]);
 

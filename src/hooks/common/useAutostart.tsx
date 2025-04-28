@@ -16,11 +16,11 @@ export const useAutostart = () => {
 
   const toggleAutostart = async (value: boolean) => {
     if (value) {
-      await disable();
-      setAutostartEnabled(false);
-    } else {
       await enable();
       setAutostartEnabled(true);
+    } else {
+      await disable();
+      setAutostartEnabled(false);
     }
 
     console.log("Autostart toggle to:", value);
