@@ -73,9 +73,9 @@ pub fn run() {
                 Some(vec!["--flag1", "--flag2"]), /* arbitrary number of args to pass to your app */
             ));
 
-            // #[cfg(desktop)]
-            // app.handle()
-            //     .plugin(tauri_plugin_updater::Builder::new().build());
+            #[cfg(desktop)]
+            app.handle()
+                .plugin(tauri_plugin_updater::Builder::new().build());
 
             #[cfg(desktop)]
             app.deep_link().register("remotecord")?;
