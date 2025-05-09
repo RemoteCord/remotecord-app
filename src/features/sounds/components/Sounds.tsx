@@ -24,14 +24,22 @@ export const Sounds = () => {
     if (callRequestPlay) {
       refSoundRequest.current?.seek(0);
       refSoundRequest.current?.howler.play();
-      setPlayRequest(true);
+      refSoundRequest.current?.howler.volume(volumes.callRequest / 100);
+
+      refSoundRequest.current?.howler.on("play", () => {
+        console.log("play", volumes.callRequest);
+      });
+      refSoundRequest.current?.howler.on("end", () => {
+        refSoundRequest.current?.howler.stop();
+        refSoundRequest.current?.seek(0);
+        setPlayRequest(false);
+      });
     } else {
       refSoundRequest.current?.howler.fade(1, 0, 500);
 
       setTimeout(() => {
         refSoundRequest.current?.howler.stop();
         refSoundRequest.current?.seek(0);
-        setPlayRequest(false);
       }, 500);
     }
   }, [callRequestPlay]);

@@ -3,7 +3,12 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUpdate } from "@/hooks/common/useUpdate";
 import { useFolderPicker } from "@/components/common/config/hooks/useFolderPicker";
-
+import { DefaultConfig } from "@/components/config/DefaultConfig";
+import {
+  isPermissionGranted,
+  requestPermission,
+  sendNotification,
+} from "@tauri-apps/plugin-notification";
 export const PROTECTED_ROUTES = ["/", "/logs"];
 
 export const LoggedProvider: React.FC<{
@@ -24,8 +29,9 @@ export const LoggedProvider: React.FC<{
     const path = location.pathname;
     if (loadingUpdateRequest) return;
     if (LoadingFolder) return;
+    if (isLoading) return;
 
-    if (firstLoad) {
+    if (firstLoad && isAuthenticated) {
       console.log("firstLoad", { folderPath });
       if (!folderPath) {
         navigator("/config");
@@ -51,6 +57,8 @@ export const LoggedProvider: React.FC<{
     if (!isLoading && !isAuthenticated) {
       navigator("/auth", { replace: true });
     }
+
+    
   }, [
     isLoading,
     isAuthenticated,
@@ -62,5 +70,11 @@ export const LoggedProvider: React.FC<{
     navigator,
   ]);
 
-  return <>{children}</>;
+  return (
+    <>
+      <DefaultConfig />
+
+      {children}
+    </>
+  );
 };

@@ -17,7 +17,6 @@ const Config = () => {
 
   return (
     <div className="w-[60%] mx-auto flex flex-col items-end">
-      <DefaultConfig />
       <div className="  bg-zinc-900 p-4 w-full rounded-lg">
         <div className="flex items-center justify-between ">
           <h2 className="font-[600]">Default download path</h2>

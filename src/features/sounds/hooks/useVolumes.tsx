@@ -23,10 +23,20 @@ export const useVolumes = () => {
             callRequest: 100,
             commandRecived: 100,
           });
+          setVolumes({
+            callJoin: 100,
+            callRequest: 100,
+            commandRecived: 100,
+          });
         }
       })
       .catch(async () => {
         volumesStore.insertRecord("volumes", {
+          callJoin: 100,
+          callRequest: 100,
+          commandRecived: 100,
+        });
+        setVolumes({
           callJoin: 100,
           callRequest: 100,
           commandRecived: 100,

@@ -5,18 +5,17 @@ use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_http::reqwest;
 mod keystroke;
 pub mod screenshot;
-use tauri::Manager;
-use reqwest::Client;
-use tokio::io::AsyncWriteExt;
 use futures_util::StreamExt;
-use std::time::{Instant, Duration};
-
-
+use reqwest::Client;
+use std::time::{Duration, Instant};
+use tauri::Manager;
+use tokio::io::AsyncWriteExt;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let unlocked: bool = true;
     let mut builder = tauri::Builder::default()
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_process::init())
         .plugin(
             tauri_plugin_stronghold::Builder::new(|password| {
@@ -121,7 +120,9 @@ async fn fetch_and_save(url: String, output: String) -> Result<(), String> {
     }
 
     let total_size = resp.content_length().unwrap_or(0);
-    let mut file = tokio::fs::File::create(&output).await.map_err(|e| e.to_string())?;
+    let mut file = tokio::fs::File::create(&output)
+        .await
+        .map_err(|e| e.to_string())?;
     let mut stream = resp.bytes_stream();
 
     let mut downloaded: u64 = 0;
@@ -138,7 +139,10 @@ async fn fetch_and_save(url: String, output: String) -> Result<(), String> {
         if last_logged.elapsed() > Duration::from_millis(500) || downloaded == total_size {
             if total_size > 0 {
                 let progress = downloaded as f64 / total_size as f64 * 100.0;
-                println!("Downloaded {:.2}% ({}/{} bytes)", progress, downloaded, total_size);
+                println!(
+                    "Downloaded {:.2}% ({}/{} bytes)",
+                    progress, downloaded, total_size
+                );
             } else {
                 println!("Downloaded {} bytes", downloaded);
             }
@@ -150,7 +154,6 @@ async fn fetch_and_save(url: String, output: String) -> Result<(), String> {
 
     Ok(())
 }
-
 
 #[tauri::command]
 async fn open_file(path: String, token: String, apiurl: String) -> Result<String, String> {

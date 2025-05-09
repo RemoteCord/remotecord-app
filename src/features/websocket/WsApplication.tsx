@@ -1,6 +1,6 @@
 import { FriendModal } from "@/features/modals/AddFriendModal";
 import { ConnectionModal } from "@/features/modals/ConnectionModal";
-import { useStoreTauri } from "@/hooks/common";
+import { useNotification, useStoreTauri } from "@/hooks/common";
 import { env } from "@/shared/env.config";
 import { createContext, useContext, useEffect, useState } from "react";
 import { type Socket, io } from "socket.io-client";
@@ -35,6 +35,7 @@ export const WsApplication: React.FC<{
   const { getRecord } = useStoreTauri();
   const { token, isLoading } = useSession();
   const { getFriends } = useFriends();
+  // const { sendMessage } = useNotification();
   const { setCallRequestPlay, setCallJoinPlay } = useSoundsStore(
     (state) => state
   );
@@ -150,8 +151,11 @@ export const WsApplication: React.FC<{
             return;
           }
           setCallRequestPlay(true);
-
           setOpenModal(true);
+          // sendMessage(
+          //   "Connection",
+          //   `You have a new connection request from ${controller.username}`
+          // );
         }
       );
     };
