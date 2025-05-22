@@ -19,6 +19,7 @@ import { useAutostart } from "@/hooks/common/useAutostart";
 import { useSession } from "@/hooks/authentication";
 import { useState } from "react";
 import { SoundModal } from "@/features/sounds/components/SoundModal";
+import { useStoreTauri } from "@/hooks/common";
 // import { useConnection } from "@/hooks/useConnection";
 // import { SoundModal } from "../modals/SoundModal";
 
@@ -29,7 +30,7 @@ export const ConfigMenu = () => {
   const { username, handleChangeUsername, setUsername } = useUserInfo();
   const { isAutostartEnabled, toggleAutostart } = useAutostart();
   const [open, setOpen] = useState(false);
-  // const { cleanStore, deleteRecord } = useStoreTauri();
+  const { cleanStore } = useStoreTauri();
 
   // const handleSignOut = async () => {
   //   // await deleteRecord("auth");
@@ -91,6 +92,7 @@ export const ConfigMenu = () => {
             <div>
               <SoundModal />
             </div>
+            {/* <button onClick={cleanStore}>clean</button> */}
           </div>
           <div className="flex flex-col gap-4">
             <button
